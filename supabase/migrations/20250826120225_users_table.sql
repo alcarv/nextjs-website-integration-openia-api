@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS users (
   id uuid PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
   email text UNIQUE NOT NULL,
   name text NOT NULL,
-  plan text NOT NULL DEFAULT 'free' CHECK (plan IN ('free', 'premium')),
+  plan text NOT NULL DEFAULT 'free' CHECK (plan IN ('free', 'pro', 'premium')),
   usage_count integer NOT NULL DEFAULT 0,
   usage_reset_date timestamptz NOT NULL DEFAULT (now() + interval '30 days'),
   created_at timestamptz DEFAULT now()

@@ -15,6 +15,9 @@ import {
   Star,
   Zap,
   Infinity as InfinityIcon,
+  Shield,
+  ArrowRight,
+  PenTool,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
@@ -303,6 +306,187 @@ export default function HumanizeText() {
         </div>
 
         {/* Pricing Plans Section */}
+        {/* Marketing Section */}
+        <div className="mt-20 py-20 bg-gradient-to-br from-blue-50 via-white to-red-50 rounded-3xl shadow-xl">
+          <div className="max-w-6xl mx-auto px-8">
+            {/* Hero Marketing */}
+            <div className="text-center mb-16">
+              <h2 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
+                Transforme Textos de <span className="text-gradient">IA em Conteúdo Humano</span>
+              </h2>
+              <p className="text-xl text-gray-600 max-w-4xl mx-auto mb-8">
+                Nossa tecnologia avançada garante que seus textos passem despercebidos por qualquer 
+                detector de IA, mantendo a naturalidade e autenticidade que você precisa.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button 
+                  onClick={() => setShowAuthModal(true)}
+                  size="lg" 
+                  className="bg-gradient-to-r from-blue-600 to-red-600 hover:from-blue-700 hover:to-red-700 text-white px-8 py-4 text-lg"
+                >
+                  Começar Gratuitamente
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+                <Button 
+                  size="lg" 
+                  variant="outline" 
+                  className="border-2 border-blue-600 text-blue-600 hover:bg-blue-50 px-8 py-4 text-lg"
+                >
+                  Ver Demonstração
+                </Button>
+              </div>
+            </div>
+
+            {/* Benefits Grid */}
+            <div className="grid md:grid-cols-3 gap-8 mb-16">
+              <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
+                <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-6 mx-auto">
+                  <Shield className="h-8 w-8 text-green-600" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">100% Indetectável</h3>
+                <p className="text-gray-600 text-center mb-4">
+                  Nossos textos humanizados passam em todos os detectores de IA do mercado, 
+                  incluindo GPTZero, Turnitin e Originality.ai.
+                </p>
+                <div className="text-center">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+                    ✓ 0% Detecção de IA
+                  </span>
+                </div>
+              </div>
+
+              <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
+                <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-6 mx-auto">
+                  <User className="h-8 w-8 text-blue-600" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">Totalmente Natural</h3>
+                <p className="text-gray-600 text-center mb-4">
+                  Textos que soam genuinamente humanos, com variações naturais de linguagem 
+                  e estruturas de frase autênticas.
+                </p>
+                <div className="text-center">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                    ✓ 100% Naturalidade
+                  </span>
+                </div>
+              </div>
+
+              <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-xl transition-shadow">
+                <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-6 mx-auto">
+                  <Zap className="h-8 w-8 text-red-600" />
+                </div>
+                <h3 className="text-2xl font-bold text-gray-900 mb-4 text-center">Rápido e Eficiente</h3>
+                <p className="text-gray-600 text-center mb-4">
+                  Processamento em segundos, mantendo o significado original enquanto 
+                  transforma completamente o estilo de escrita.
+                </p>
+                <div className="text-center">
+                  <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
+                    ✓ Resultados em 5s
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Performance Metrics */}
+            <div className="bg-white rounded-2xl shadow-lg p-8 mb-16">
+              <h3 className="text-2xl font-bold text-center text-gray-900 mb-8">
+                Resultados Comprovados
+              </h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                <div className="text-center">
+                  <div className="text-4xl font-bold text-green-600 mb-2">0%</div>
+                  <div className="text-gray-600">Detecção de IA</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-4xl font-bold text-blue-600 mb-2">100%</div>
+                  <div className="text-gray-600">Naturalidade</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-4xl font-bold text-red-600 mb-2">98%</div>
+                  <div className="text-gray-600">Satisfação</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-4xl font-bold text-purple-600 mb-2">5s</div>
+                  <div className="text-gray-600">Tempo Médio</div>
+                </div>
+              </div>
+            </div>
+
+            {/* Target Audiences */}
+            <div className="grid md:grid-cols-3 gap-8 mb-16">
+              <div className="text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center mb-6 mx-auto">
+                  <User className="h-10 w-10 text-white" />
+                </div>
+                <h4 className="text-xl font-bold text-gray-900 mb-4">Para Estudantes</h4>
+                <p className="text-gray-600 mb-4">
+                  Transforme textos de pesquisa em trabalhos acadêmicos naturais e originais.
+                </p>
+                <ul className="text-sm text-gray-500 space-y-1">
+                  <li>✓ Trabalhos universitários</li>
+                  <li>✓ Artigos de pesquisa</li>
+                  <li>✓ Ensaios e dissertações</li>
+                </ul>
+              </div>
+
+              <div className="text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mb-6 mx-auto">
+                  <PenTool className="h-10 w-10 text-white" />
+                </div>
+                <h4 className="text-xl font-bold text-gray-900 mb-4">Para Profissionais</h4>
+                <p className="text-gray-600 mb-4">
+                  Crie conteúdo profissional autêntico para blogs, redes sociais e marketing.
+                </p>
+                <ul className="text-sm text-gray-500 space-y-1">
+                  <li>✓ Posts para blog</li>
+                  <li>✓ Conteúdo para redes sociais</li>
+                  <li>✓ E-mails marketing</li>
+                </ul>
+              </div>
+
+              <div className="text-center">
+                <div className="w-20 h-20 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center mb-6 mx-auto">
+                  <Crown className="h-10 w-10 text-white" />
+                </div>
+                <h4 className="text-xl font-bold text-gray-900 mb-4">Para Empresas</h4>
+                <p className="text-gray-600 mb-4">
+                  Escale a produção de conteúdo mantendo qualidade e autenticidade.
+                </p>
+                <ul className="text-sm text-gray-500 space-y-1">
+                  <li>✓ Conteúdo em escala</li>
+                  <li>✓ Documentação técnica</li>
+                  <li>✓ Materiais de treinamento</li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Final CTA */}
+            <div className="text-center bg-gradient-to-r from-blue-600 to-red-600 rounded-2xl p-8 text-white">
+              <h3 className="text-3xl font-bold mb-4">
+                Pronto para Criar Conteúdo 100% Humano?
+              </h3>
+              <p className="text-xl mb-6 opacity-90">
+                Junte-se a milhares de usuários que já transformaram seus textos de IA
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Button 
+                  onClick={() => setShowAuthModal(true)}
+                  size="lg" 
+                  className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold"
+                >
+                  Começar Agora - Grátis
+                </Button>
+                <div className="flex items-center justify-center space-x-4 text-sm opacity-90">
+                  <span>✓ Sem cartão de crédito</span>
+                  <span>✓ 3 usos gratuitos</span>
+                  <span>✓ Resultados instantâneos</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div className="mt-20 py-16 bg-white rounded-2xl shadow-lg">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
