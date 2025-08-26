@@ -27,7 +27,7 @@ export default function Navigation() {
           <Link href="/" className="flex items-center space-x-2">
             <Scale className="h-8 w-8 text-blue-600" />
             <span className="text-2xl font-bold text-gradient">
-              Dr. Silva & Associados
+              Dra. Ruth Monielly
             </span>
           </Link>
 
