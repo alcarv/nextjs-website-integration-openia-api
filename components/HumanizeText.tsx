@@ -264,7 +264,7 @@ export default function HumanizeText() {
                 ) : (
                   <Button 
                     onClick={handleHumanize}
-                    disabled={isLoading || !inputText.trim() || !canUseService() || isOverWordLimit}
+                    disabled={Boolean(isLoading || !inputText.trim() || !canUseService() || isOverWordLimit)}
                     className="bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50"
                   >
                     {isLoading ? 'Humanizando...' : 'Humanizar Texto'}
