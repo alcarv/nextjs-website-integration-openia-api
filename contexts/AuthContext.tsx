@@ -6,8 +6,8 @@ import { supabase, User } from '@/lib/supabase';
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signUp: (email: string, password: string, name: string) => Promise<void>;
-  signIn: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string, name: string) => Promise<User | null>;
+  signIn: (email: string, password: string) => Promise<User | null>;
   signOut: () => Promise<void>;
   refreshUser: () => Promise<void>;
 }
@@ -49,13 +49,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       .eq('id', userId)
       .single();
 
-    if (data && !error) {
-      setUser(data);
+    if (error || !data) {
+      return null;
     }
+
+    setUser(data);
+    return data;
   };
 
   const signUp = async (email: string, password: string, name: string) => {
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -64,15 +67,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     });
 
     if (error) throw error;
+
+    return data.user ? await fetchUserData(data.user.id) : null;
   };
 
   const signIn = async (email: string, password: string) => {
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
 
     if (error) throw error;
+
+    return data.user ? await fetchUserData(data.user.id) : null;
   };
 
   const signOut = async () => {
