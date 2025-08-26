@@ -4,7 +4,18 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { Bot, User, Copy, CheckCircle, AlertCircle, Crown, Lock, Star, Zap, Infinity } from 'lucide-react';
+import {
+  Bot,
+  User,
+  Copy,
+  CheckCircle,
+  AlertCircle,
+  Crown,
+  Lock,
+  Star,
+  Zap,
+  Infinity as InfinityIcon,
+} from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthModal from '@/components/AuthModal';
@@ -406,7 +417,7 @@ export default function HumanizeText() {
               <CardContent className="pt-0">
                 <ul className="space-y-4 mb-8">
                   <li className="flex items-center">
-                    <Infinity className="h-5 w-5 text-blue-600 mr-3" />
+                    <InfinityIcon className="h-5 w-5 text-blue-600 mr-3" />
                     <span>Humanizações ilimitadas</span>
                   </li>
                   <li className="flex items-center">
