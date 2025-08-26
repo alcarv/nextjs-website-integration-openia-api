@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+
 import {
   Card,
   CardHeader,
@@ -191,6 +192,7 @@ export default function CheckoutPage() {
               </CardFooter>
             </form>
           </Card>
+
         </div>
       ) : null}
       <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
