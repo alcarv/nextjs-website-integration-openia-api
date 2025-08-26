@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
@@ -32,6 +33,7 @@ export default function HumanizeText() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const { toast } = useToast();
   const { user, refreshUser } = useAuth();
+  const router = useRouter();
 
   const FREE_LIMIT = 3;
   const FREE_WORD_LIMIT = 200;
@@ -49,6 +51,14 @@ export default function HumanizeText() {
   const exceedsWordLimit = () => {
     if (!user || user.plan === 'premium') return false;
     return getWordCount(inputText) > FREE_WORD_LIMIT;
+  };
+
+  const handleUpgrade = () => {
+    if (user) {
+      router.push('/checkout');
+    } else {
+      setShowAuthModal(true);
+    }
   };
 
   const handleHumanize = async () => {
@@ -184,7 +194,11 @@ export default function HumanizeText() {
                     )}
                   </div>
                   {user.plan === 'free' && (
-                    <Button size="sm" className="bg-gradient-to-r from-blue-600 to-red-600 text-white">
+                    <Button
+                      size="sm"
+                      onClick={handleUpgrade}
+                      className="bg-gradient-to-r from-blue-600 to-red-600 text-white"
+                    >
                       Fazer Upgrade
                     </Button>
                   )}
