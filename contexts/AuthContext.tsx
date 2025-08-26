@@ -55,30 +55,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   };
 
   const signUp = async (email: string, password: string, name: string) => {
-    const { data, error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: { name },
+      },
     });
 
     if (error) throw error;
-
-    if (data.user) {
-      // Create user profile
-      const { error: profileError } = await supabase
-        .from('users')
-        .insert([
-          {
-            id: data.user.id,
-            email,
-            name,
-            plan: 'free',
-            usage_count: 0,
-            usage_reset_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-          },
-        ]);
-
-      if (profileError) throw profileError;
-    }
   };
 
   const signIn = async (email: string, password: string) => {
