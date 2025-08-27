@@ -24,6 +24,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthModal from '@/components/AuthModal';
 import { Progress } from '@/components/ui/progress';
+import { usePlans } from '@/hooks/usePlans';
 
 export default function HumanizeText() {
   const [inputText, setInputText] = useState('');
@@ -34,14 +35,16 @@ export default function HumanizeText() {
   const { toast } = useToast();
   const { user, refreshUser } = useAuth();
   const router = useRouter();
-
-  const FREE_LIMIT = 3;
-  const FREE_WORD_LIMIT = 200;
+  const { plans } = usePlans();
+  const freePlan = plans.find((p) => p.slug === 'free');
+  const proPlan = plans.find((p) => p.slug === 'pro');
+  const premiumPlan = plans.find((p) => p.slug === 'premium');
+  const currentPlan = plans.find((p) => p.slug === user?.plan);
   
   const canUseService = () => {
-    if (!user) return false;
-    if (user.plan === 'premium') return true;
-    return user.usage_count < FREE_LIMIT;
+    if (!user || !currentPlan) return false;
+    if (currentPlan.humanizations_per_month === null) return true;
+    return user.usage_count < currentPlan.humanizations_per_month;
   };
 
   const getWordCount = (text: string) => {
@@ -49,8 +52,8 @@ export default function HumanizeText() {
   };
 
   const exceedsWordLimit = () => {
-    if (!user || user.plan === 'premium') return false;
-    return getWordCount(inputText) > FREE_WORD_LIMIT;
+    if (!user || !currentPlan || currentPlan.word_limit === null) return false;
+    return getWordCount(inputText) > currentPlan.word_limit;
   };
 
   const handleUpgrade = () => {
@@ -79,7 +82,7 @@ export default function HumanizeText() {
     if (exceedsWordLimit()) {
       toast({
         title: "Limite de palavras",
-        description: `Usuários gratuitos podem humanizar até ${FREE_WORD_LIMIT} palavras por vez. Faça upgrade para textos maiores.`,
+        description: `Seu plano permite até ${currentPlan?.word_limit ?? 0} palavras por texto. Faça upgrade para textos maiores.`,
         variant: "destructive",
       });
       return;
@@ -155,9 +158,13 @@ export default function HumanizeText() {
     }
   };
 
-  const usagePercentage = user ? (user.usage_count / FREE_LIMIT) * 100 : 0;
+  const usagePercentage =
+    user && currentPlan && currentPlan.humanizations_per_month !== null
+      ? (user.usage_count / currentPlan.humanizations_per_month) * 100
+      : 0;
   const wordCount = getWordCount(inputText);
-  const isOverWordLimit = user && user.plan === 'free' && wordCount > FREE_WORD_LIMIT;
+  const isOverWordLimit =
+    currentPlan && currentPlan.word_limit !== null && wordCount > currentPlan.word_limit;
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -179,21 +186,26 @@ export default function HumanizeText() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-2">
-                    {user.plan === 'premium' ? (
+                    {currentPlan?.slug === 'premium' ? (
                       <div className="flex items-center space-x-2">
                         <Crown className="h-5 w-5 text-yellow-500" />
                         <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-red-600">
                           Plano Premium
                         </span>
                       </div>
+                    ) : currentPlan?.slug === 'pro' ? (
+                      <div className="flex items-center space-x-2">
+                        <Zap className="h-5 w-5 text-blue-600" />
+                        <span className="font-semibold">Plano Pro</span>
+                      </div>
                     ) : (
-                      <>
+                      <div className="flex items-center space-x-2">
                         <User className="h-5 w-5 text-blue-600" />
                         <span className="font-semibold">Plano Gratuito</span>
-                      </>
+                      </div>
                     )}
                   </div>
-                  {user.plan === 'free' && (
+                  {currentPlan?.slug !== 'premium' && (
                     <Button
                       size="sm"
                       onClick={handleUpgrade}
@@ -203,21 +215,26 @@ export default function HumanizeText() {
                     </Button>
                   )}
                 </div>
-                
-                {user.plan === 'free' && (
+                {currentPlan && currentPlan.humanizations_per_month !== null && (
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
-                      <span>Uso mensal: {user.usage_count}/{FREE_LIMIT}</span>
-                      <span>{FREE_LIMIT - user.usage_count} restantes</span>
+                      <span>
+                        Uso mensal: {user.usage_count}/{currentPlan.humanizations_per_month}
+                      </span>
+                      <span>
+                        {currentPlan.humanizations_per_month - user.usage_count} restantes
+                      </span>
                     </div>
                     <Progress value={usagePercentage} className="h-2" />
-                    <p className="text-xs text-gray-500">
-                      Limite de {FREE_WORD_LIMIT} palavras por texto no plano gratuito
-                    </p>
+                    {currentPlan.word_limit && (
+                      <p className="text-xs text-gray-500">
+                        Limite de {currentPlan.word_limit} palavras por texto
+                      </p>
+                    )}
                   </div>
                 )}
-                
-                {user.plan === 'premium' && (
+
+                {currentPlan && currentPlan.humanizations_per_month === null && (
                   <p className="text-sm text-green-600">✓ Uso ilimitado ativo</p>
                 )}
               </CardContent>
@@ -249,7 +266,7 @@ export default function HumanizeText() {
                   {wordCount} palavras ({inputText.length} caracteres)
                   {isOverWordLimit && (
                     <span className="block text-xs">
-                      Limite: {FREE_WORD_LIMIT} palavras para plano gratuito
+                      Limite: {currentPlan?.word_limit ?? 0} palavras para seu plano
                     </span>
                   )}
                 </span>
@@ -520,7 +537,9 @@ export default function HumanizeText() {
                 </div>
                 <CardTitle className="text-2xl font-bold text-gray-900">Gratuito</CardTitle>
                 <div className="mt-4">
-                  <span className="text-4xl font-bold text-gray-900">R$ 0</span>
+                  <span className="text-4xl font-bold text-gray-900">
+                    R$ {freePlan?.price ?? 0}
+                  </span>
                   <span className="text-gray-500">/mês</span>
                 </div>
               </CardHeader>
@@ -528,11 +547,15 @@ export default function HumanizeText() {
                 <ul className="space-y-4 mb-8">
                   <li className="flex items-center">
                     <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                    <span>3 humanizações por mês</span>
+                    <span>
+                      {freePlan?.humanizations_per_month ?? 0} humanizações por mês
+                    </span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                    <span>Até 200 palavras por texto</span>
+                    <span>
+                      Até {freePlan?.word_limit ?? 0} palavras por texto
+                    </span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
@@ -565,7 +588,9 @@ export default function HumanizeText() {
                 </div>
                 <CardTitle className="text-2xl font-bold text-gray-900">Pro</CardTitle>
                 <div className="mt-4">
-                  <span className="text-4xl font-bold text-gray-900">R$ 29</span>
+                  <span className="text-4xl font-bold text-gray-900">
+                    R$ {proPlan?.price ?? 0}
+                  </span>
                   <span className="text-gray-500">/mês</span>
                 </div>
               </CardHeader>
@@ -573,11 +598,15 @@ export default function HumanizeText() {
                 <ul className="space-y-4 mb-8">
                   <li className="flex items-center">
                     <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                    <span>100 humanizações por mês</span>
+                    <span>
+                      {proPlan?.humanizations_per_month ?? 0} humanizações por mês
+                    </span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                    <span>Até 2.000 palavras por texto</span>
+                    <span>
+                      Até {proPlan?.word_limit ?? 0} palavras por texto
+                    </span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
@@ -608,7 +637,9 @@ export default function HumanizeText() {
                   Premium
                 </CardTitle>
                 <div className="mt-4">
-                  <span className="text-4xl font-bold text-gray-900">R$ 79</span>
+                  <span className="text-4xl font-bold text-gray-900">
+                    R$ {premiumPlan?.price ?? 0}
+                  </span>
                   <span className="text-gray-500">/mês</span>
                 </div>
               </CardHeader>
@@ -616,11 +647,19 @@ export default function HumanizeText() {
                 <ul className="space-y-4 mb-8">
                   <li className="flex items-center">
                     <InfinityIcon className="h-5 w-5 text-blue-600 mr-3" />
-                    <span>Humanizações ilimitadas</span>
+                    <span>
+                      {premiumPlan?.humanizations_per_month
+                        ? `${premiumPlan.humanizations_per_month} humanizações por mês`
+                        : 'Humanizações ilimitadas'}
+                    </span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                    <span>Textos de qualquer tamanho</span>
+                    <span>
+                      {premiumPlan?.word_limit
+                        ? `Até ${premiumPlan.word_limit} palavras por texto`
+                        : 'Textos de qualquer tamanho'}
+                    </span>
                   </li>
                   <li className="flex items-center">
                     <CheckCircle className="h-5 w-5 text-green-500 mr-3" />

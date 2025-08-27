@@ -39,21 +39,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check usage limits for free users
-    if (user.plan === 'free') {
-      if (user.usage_count >= 3) {
+    // Fetch plan details
+    const { data: planData } = await supabase
+      .from('plans')
+      .select('*')
+      .eq('slug', user.plan)
+      .single();
+
+    // Check usage limits based on plan
+    if (planData?.humanizations_per_month !== null) {
+      if (user.usage_count >= planData.humanizations_per_month) {
         return NextResponse.json(
           { error: 'Limite de uso atingido. Faça upgrade para continuar.' },
           { status: 403 }
         );
       }
+    }
 
-      if (wordCount > 200) {
-        return NextResponse.json(
-          { error: 'Limite de palavras excedido para plano gratuito.' },
-          { status: 403 }
-        );
-      }
+    if (planData?.word_limit !== null && wordCount > planData.word_limit) {
+      return NextResponse.json(
+        { error: 'Limite de palavras excedido para seu plano.' },
+        { status: 403 }
+      );
     }
 
     const completion = await openai.chat.completions.create({
