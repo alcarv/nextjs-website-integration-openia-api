@@ -9,7 +9,7 @@ export type User = {
   id: string;
   email: string;
   name: string;
-  plan: 'free' | 'premium';
+  plan: 'free' | 'pro' | 'premium';
   usage_count: number;
   usage_reset_date: string;
   created_at: string;
@@ -20,4 +20,13 @@ export type UsageLog = {
   user_id: string;
   text_length: number;
   created_at: string;
+};
+
+export type Plan = {
+  id: string;
+  slug: string;
+  name: string;
+  price: number;
+  humanizations_per_month: number | null;
+  word_limit: number | null;
 };
