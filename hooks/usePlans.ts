@@ -10,9 +10,10 @@ export function usePlans() {
   useEffect(() => {
     const fetchPlans = async () => {
       const { data, error } = await supabase
-        .from<Plan>('plans')
+        .from('plans')
         .select('*')
-        .order('price');
+        .order('price')
+        .returns<Plan[]>();
       if (!error && data) {
         setPlans(data);
       }
