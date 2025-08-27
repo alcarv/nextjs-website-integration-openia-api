@@ -465,7 +465,7 @@ export default function HumanizeText() {
                 <div className="w-20 h-20 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center mb-6 mx-auto">
                   <PenTool className="h-10 w-10 text-white" />
                 </div>
-                <h4 className="text-xl font-bold text-gray-900 mb-4">Para Profissionais</h4>
+                <h4 className="text-xl font-bold text-gray-900 mb-4">Para Redatores</h4>
                 <p className="text-gray-600 mb-4">
                   Crie conteúdo profissional autêntico para blogs, redes sociais e marketing.
                 </p>
@@ -480,7 +480,7 @@ export default function HumanizeText() {
                 <div className="w-20 h-20 bg-gradient-to-br from-red-500 to-red-600 rounded-full flex items-center justify-center mb-6 mx-auto">
                   <Crown className="h-10 w-10 text-white" />
                 </div>
-                <h4 className="text-xl font-bold text-gray-900 mb-4">Para Empresas</h4>
+                <h4 className="text-xl font-bold text-gray-900 mb-4">Para Professores</h4>
                 <p className="text-gray-600 mb-4">
                   Escale a produção de conteúdo mantendo qualidade e autenticidade.
                 </p>
