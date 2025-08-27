@@ -18,6 +18,7 @@ import {
   Instagram,
   Facebook
 } from 'lucide-react';
+import Footer from '@/components/Footer';
 
 const contactInfo = [
   {
@@ -321,6 +322,7 @@ export default function ContatoPage() {
           </div>
         </div>
       </section>
+      <Footer />
     </div>
   );
 }

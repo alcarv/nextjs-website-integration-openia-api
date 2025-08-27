@@ -16,6 +16,7 @@ import {
   BookOpen,
   Gavel
 } from 'lucide-react';
+import Footer from '@/components/Footer';
 
 const services = [
   {
@@ -283,6 +284,7 @@ export default function ServicosPage() {
           </div>
         </div>
       </section>
+      <Footer />
     </div>
   );
 }

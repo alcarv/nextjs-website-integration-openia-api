@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { Menu, X, Scale, PenTool, Bot, Phone, User as UserIcon, LogOut } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
 import AuthModal from '@/components/AuthModal';
@@ -14,9 +15,11 @@ export default function Navigation() {
 
   const navItems = [
     { href: '/', label: 'Início', icon: UserIcon },
+    { href: '/sobre', label: 'Sobre', icon: UserIcon },
     { href: '/servicos', label: 'Serviços', icon: Scale },
     { href: '/copywriting', label: 'Copywriting', icon: PenTool },
     { href: '/humanizar', label: 'Humanizar Texto', icon: Bot },
+    { href: '/blog', label: 'Blog', icon: BookOpen },
     { href: '/contato', label: 'Contato', icon: Phone },
   ];
 

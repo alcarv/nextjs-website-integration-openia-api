@@ -17,6 +17,7 @@ import {
   Eye,
   Heart
 } from 'lucide-react';
+import Footer from '@/components/Footer';
 
 const copywritingServices = [
   {
@@ -345,6 +346,7 @@ export default function CopywritingPage() {
           </div>
         </div>
       </section>
+      <Footer />
     </div>
   );
 }
