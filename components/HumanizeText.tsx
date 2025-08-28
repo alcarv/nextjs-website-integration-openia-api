@@ -29,6 +29,8 @@ import { usePlans } from '@/hooks/usePlans';
 export default function HumanizeText() {
   const [inputText, setInputText] = useState('');
   const [outputText, setOutputText] = useState('');
+  const [outputVersions, setOutputVersions] = useState<string[]>([]);
+  const [selectedVersions, setSelectedVersions] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -119,7 +121,13 @@ export default function HumanizeText() {
       }
 
       const data = await response.json();
-      setOutputText(data.humanizedText);
+      if (data.humanizedVersions && Array.isArray(data.humanizedVersions)) {
+        setOutputVersions(data.humanizedVersions);
+        setOutputText(data.humanizedVersions[0] || '');
+      } else {
+        setOutputText(data.humanizedText || '');
+        setOutputVersions([data.humanizedText || '']);
+      }
       
       // Refresh user data to update usage count
       await refreshUser();
@@ -139,11 +147,12 @@ export default function HumanizeText() {
     }
   };
 
-  const handleCopy = async () => {
-    if (!outputText) return;
+  const handleCopy = async (text?: string) => {
+    const textToCopy = text || outputText;
+    if (!textToCopy) return;
     
     try {
-      await navigator.clipboard.writeText(outputText);
+      await navigator.clipboard.writeText(textToCopy);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
       
@@ -281,20 +290,83 @@ export default function HumanizeText() {
                     Entrar para Usar
                   </Button>
                 ) : (
-                  <Button 
-                    onClick={handleHumanize}
-                    disabled={Boolean(isLoading || !inputText.trim() || !canUseService() || isOverWordLimit)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50"
-                  >
-                    {isLoading ? 'Humanizando...' : 'Humanizar Texto'}
-                  </Button>
+                  <div className="space-y-4">
+                    <div className="flex items-center space-x-4">
+                      <label className="text-sm font-medium text-gray-700">
+                        Versões:
+                      </label>
+                      <select
+                        value={selectedVersions}
+                        onChange={(e) => setSelectedVersions(Number(e.target.value))}
+                        className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                      >
+                        <option value={1}>1 versão</option>
+                        <option value={2}>2 versões</option>
+                        <option value={3}>3 versões</option>
+                      </select>
+                    </div>
+                    <Button 
+                      onClick={handleHumanize}
+                      disabled={Boolean(isLoading || !inputText.trim() || !canUseService() || isOverWordLimit)}
+                      className="bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 w-full"
+                    >
+                      {isLoading ? 'Humanizando...' : `Gerar ${selectedVersions} ${selectedVersions === 1 ? 'Versão' : 'Versões'}`}
+                    </Button>
+                  </div>
                 )}
               </div>
             </CardContent>
           </Card>
 
           {/* Output Card */}
-          <Card className="bg-white">
+          <div className="space-y-6">
+            {outputVersions.length > 1 ? (
+              outputVersions.map((version, index) => (
+                <Card key={index} className="bg-white">
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        <User className="h-5 w-5 text-green-600" />
+                        <span>Versão {index + 1}</span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        <div className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+                          {version.length} caracteres
+                        </div>
+                      </div>
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Textarea
+                      value={version}
+                      readOnly
+                      className="min-h-[200px] resize-none bg-gray-50"
+                    />
+                    <div className="flex justify-end mt-4">
+                      <Button 
+                        onClick={() => handleCopy(version)}
+                        variant="outline"
+                        size="sm"
+                        className="border-green-600 text-green-600 hover:bg-green-50"
+                      >
+                        {copied ? (
+                          <>
+                            <CheckCircle className="mr-2 h-4 w-4" />
+                            Copiado!
+                          </>
+                        ) : (
+                          <>
+                            <Copy className="mr-2 h-4 w-4" />
+                            Copiar
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <Card className="bg-white">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
                 <User className="h-5 w-5 text-green-600" />
@@ -316,7 +388,7 @@ export default function HumanizeText() {
                   {outputText.length} caracteres
                 </span>
                 <Button 
-                  onClick={handleCopy}
+                  onClick={() => handleCopy()}
                   disabled={!outputText}
                   variant="outline"
                   className="border-green-600 text-green-600 hover:bg-green-50"
@@ -336,6 +408,8 @@ export default function HumanizeText() {
               </div>
             </CardContent>
           </Card>
+            )}
+          </div>
         </div>
 
         {/* Pricing Plans Section */}

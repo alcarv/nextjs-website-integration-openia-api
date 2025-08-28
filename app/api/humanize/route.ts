@@ -8,7 +8,7 @@ const openai = new OpenAI({
 
 export async function POST(request: NextRequest) {
   try {
-    const { text, wordCount } = await request.json();
+    const { text, wordCount, versions = 1 } = await request.json();
     const userId = request.headers.get('Authorization')?.replace('Bearer ', '');
 
     if (!userId) {
@@ -39,31 +39,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Fetch plan details
-    const { data: planData } = await supabase
-      .from('plans')
-      .select('*')
-      .eq('slug', user.plan)
-      .single();
-
-    // Check usage limits based on plan
-    if (planData?.humanizations_per_month !== null) {
-      if (user.usage_count >= planData.humanizations_per_month) {
+    // Check usage limits for free users
+    if (user.plan === 'free') {
+      if (user.usage_count >= 3) {
         return NextResponse.json(
           { error: 'Limite de uso atingido. Faça upgrade para continuar.' },
           { status: 403 }
         );
       }
+
+      if (wordCount > 200) {
+        return NextResponse.json(
+          { error: 'Limite de palavras excedido para plano gratuito.' },
+          { status: 403 }
+        );
+      }
     }
 
-    if (planData?.word_limit !== null && wordCount > planData.word_limit) {
-      return NextResponse.json(
-        { error: 'Limite de palavras excedido para seu plano.' },
-        { status: 403 }
-      );
-    }
-
-    const completion = await openai.chat.completions.create({
+    // Generate multiple versions if requested
+    const humanizedVersions: string[] = [];
+    
+    for (let i = 0; i < versions; i++) {
+      const completion = await openai.chat.completions.create({
       model: "gpt-4o-mini",
       messages: [
         {
@@ -79,20 +76,25 @@ Regras importantes:
 6. Adicione elementos conversacionais naturais
 7. Mantenha o tom profissional quando necessário
 8. Responda APENAS com o texto humanizado, sem explicações adicionais
-9. O texto deve soar como se fosse escrito por um brasileiro nativo`
+9. O texto deve soar como se fosse escrito por um brasileiro nativo
+10. ${versions > 1 ? `Esta é a versão ${i + 1} de ${versions}. Crie uma variação única e diferente das outras versões, mas mantendo o mesmo significado.` : ''}`
         },
         {
           role: "user",
           content: `Por favor, humanize este texto mantendo seu significado original:\n\n${text}`
         }
       ],
-      temperature: 0.7,
+      temperature: versions > 1 ? 0.8 + (i * 0.1) : 0.7,
       max_tokens: 2000,
     });
 
-    const humanizedText = completion.choices[0]?.message?.content;
+      const humanizedText = completion.choices[0]?.message?.content;
+      if (humanizedText) {
+        humanizedVersions.push(humanizedText);
+      }
+    }
 
-    if (!humanizedText) {
+    if (humanizedVersions.length === 0) {
       throw new Error('Erro ao gerar texto humanizado');
     }
 
@@ -116,7 +118,10 @@ Regras importantes:
         },
       ]);
 
-    return NextResponse.json({ humanizedText });
+    return NextResponse.json({ 
+      humanizedText: humanizedVersions[0],
+      humanizedVersions: humanizedVersions
+    });
   } catch (error) {
     console.error('Erro na API de humanização:', error);
     return NextResponse.json(
