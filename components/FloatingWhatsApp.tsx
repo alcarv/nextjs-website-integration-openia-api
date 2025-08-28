@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { getWhatsAppUrl } from '@/lib/whatsapp';
 
 // WhatsApp SVG Icon Component
 const WhatsAppIcon = ({ className }: { className?: string }) => (
@@ -26,11 +27,7 @@ export default function FloatingWhatsApp() {
   }, []);
 
   const handleWhatsAppClick = () => {
-    const phoneNumber = '556496762041';
-    const message = encodeURIComponent('Olá! Gostaria de saber mais sobre os serviços da Dra.Ruth');
-    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${message}`;
-    
-    window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+    window.open(getWhatsAppUrl(), '_blank', 'noopener,noreferrer');
   };
 
   if (!isVisible) return null;

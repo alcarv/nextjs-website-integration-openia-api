@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Scale, PenTool, Shield } from 'lucide-react';
 import Link from 'next/link';
+import { getWhatsAppUrl } from '@/lib/whatsapp';
 
 export default function Hero() {
   return (
@@ -18,11 +19,26 @@ export default function Hero() {
               tecnologia IA para humanizar seus textos.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
-                Agendar Consulta
-                <ArrowRight className="ml-2 h-5 w-5" />
+              <Button
+                asChild
+                size="lg"
+                className="bg-blue-600 hover:bg-blue-700 text-white"
+              >
+                <Link
+                  href={getWhatsAppUrl('Olá! Gostaria de agendar uma consulta')}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center"
+                >
+                  Agendar Consulta
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Link>
               </Button>
-              <Button size="lg" variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
+              <Button
+                size="lg"
+                variant="outline"
+                className="border-blue-600 text-blue-600 hover:bg-blue-50"
+              >
                 <Link href="/humanizar" className="flex items-center">
                   Humanizar Texto
                   <PenTool className="ml-2 h-5 w-5" />

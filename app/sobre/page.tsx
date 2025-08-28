@@ -1,12 +1,14 @@
 import Navigation from '@/components/Navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { 
-  Scale, 
-  PenTool, 
-  Award, 
-  Users, 
-  Target, 
+import Link from 'next/link';
+import { getWhatsAppUrl } from '@/lib/whatsapp';
+import {
+  Scale,
+  PenTool,
+  Award,
+  Users,
+  Target,
   BookOpen,
   CheckCircle,
   ArrowRight,
@@ -137,11 +139,26 @@ export default function SobrePage() {
                 para entregar resultados excepcionais aos clientes.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
-                <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
-                  <Calendar className="mr-2 h-5 w-5" />
-                  Agendar Consulta
+                <Button
+                  asChild
+                  size="lg"
+                  className="bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  <Link
+                    href={getWhatsAppUrl('Olá! Gostaria de agendar uma consulta')}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center"
+                  >
+                    <Calendar className="mr-2 h-5 w-5" />
+                    Agendar Consulta
+                  </Link>
                 </Button>
-                <Button size="lg" variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border-blue-600 text-blue-600 hover:bg-blue-50"
+                >
                   Ver Portfólio
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
@@ -340,11 +357,26 @@ export default function SobrePage() {
             com soluções jurídicas e de comunicação estratégica.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
-              <Calendar className="mr-2 h-5 w-5" />
-              Agendar Consulta
+            <Button
+              asChild
+              size="lg"
+              className="bg-white text-blue-600 hover:bg-gray-100"
+            >
+              <Link
+                href={getWhatsAppUrl('Olá! Gostaria de agendar uma consulta')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center"
+              >
+                <Calendar className="mr-2 h-5 w-5" />
+                Agendar Consulta
+              </Link>
             </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-white text-white hover:bg-white hover:text-blue-600"
+            >
               Ver Serviços
               <ArrowRight className="ml-2 h-5 w-5" />
             </Button>

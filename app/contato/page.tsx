@@ -4,6 +4,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import Link from 'next/link';
+import { getWhatsAppUrl } from '@/lib/whatsapp';
 import { 
   Phone, 
   Mail, 
@@ -80,9 +82,20 @@ export default function ContatoPage() {
             Pronto para transformar seus resultados? Vamos conversar sobre como podemos 
             ajudar seu negócio a crescer com soluções jurídicas e de copywriting.
           </p>
-          <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
-            <Calendar className="mr-2 h-5 w-5" />
-            Agendar Consulta Gratuita
+          <Button
+            asChild
+            size="lg"
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            <Link
+              href={getWhatsAppUrl('Olá! Gostaria de agendar uma consulta gratuita')}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center"
+            >
+              <Calendar className="mr-2 h-5 w-5" />
+              Agendar Consulta Gratuita
+            </Link>
           </Button>
         </div>
       </section>
@@ -236,9 +249,19 @@ export default function ContatoPage() {
                   <div className="flex justify-between items-center mb-4">
                     <span className="text-lg font-semibold text-blue-600">{service.price}</span>
                   </div>
-                  <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                    Solicitar Orçamento
-                    <ArrowRight className="ml-2 h-4 w-4" />
+                  <Button
+                    asChild
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                  >
+                    <Link
+                      href={getWhatsAppUrl(`Olá! Gostaria de solicitar um orçamento para ${service.title}`)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-center"
+                    >
+                      Solicitar Orçamento
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Link>
                   </Button>
                 </CardContent>
               </Card>
