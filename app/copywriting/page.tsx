@@ -1,12 +1,14 @@
 import Navigation from '@/components/Navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { 
-  PenTool, 
-  Target, 
-  TrendingUp, 
-  Users, 
-  Mail, 
+import Link from 'next/link';
+import { getWhatsAppUrl } from '@/lib/whatsapp';
+import {
+  PenTool,
+  Target,
+  TrendingUp,
+  Users,
+  Mail,
   Globe,
   CheckCircle,
   ArrowRight,
@@ -249,8 +251,17 @@ export default function CopywritingPage() {
                       <div className="flex justify-between items-center mb-4">
                         <span className="text-lg font-semibold text-gray-900">{service.price}</span>
                       </div>
-                      <Button className="w-full bg-gradient-to-r from-blue-600 to-red-600 hover:from-blue-700 hover:to-red-700 text-white">
-                        Solicitar Orçamento
+                      <Button
+                        asChild
+                        className="w-full bg-gradient-to-r from-blue-600 to-red-600 hover:from-blue-700 hover:to-red-700 text-white"
+                      >
+                        <Link
+                          href={getWhatsAppUrl(`Olá! Gostaria de solicitar um orçamento para ${service.title}`)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Solicitar Orçamento
+                        </Link>
                       </Button>
                     </div>
                   </CardContent>
@@ -336,12 +347,34 @@ export default function CopywritingPage() {
             Vamos criar copy que transforma visitantes em clientes fiéis e aumenta seu faturamento.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
-              <Zap className="mr-2 h-5 w-5" />
-              Começar Projeto Agora
+            <Button
+              asChild
+              size="lg"
+              className="bg-white text-blue-600 hover:bg-gray-100"
+            >
+              <Link
+                href={getWhatsAppUrl('Olá! Gostaria de começar um projeto de copywriting')}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center"
+              >
+                <Zap className="mr-2 h-5 w-5" />
+                Começar Projeto Agora
+              </Link>
             </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
-              Agendar Conversa
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="border-white text-white hover:bg-white hover:text-blue-600"
+            >
+              <Link
+                href={getWhatsAppUrl('Olá! Gostaria de agendar uma conversa sobre copywriting')}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Agendar Conversa
+              </Link>
             </Button>
           </div>
         </div>

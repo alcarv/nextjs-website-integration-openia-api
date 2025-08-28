@@ -1,6 +1,8 @@
 import Navigation from '@/components/Navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import Link from 'next/link';
+import { getWhatsAppUrl } from '@/lib/whatsapp';
 import { 
   Scale, 
   PenTool, 
@@ -149,9 +151,20 @@ export default function ServicosPage() {
             Soluções completas que combinam expertise jurídica com estratégias de comunicação 
             inovadoras para garantir os melhores resultados para nossos clientes.
           </p>
-          <Button size="lg" className="bg-blue-600 hover:bg-blue-700 text-white">
-            Solicitar Orçamento
-            <ArrowRight className="ml-2 h-5 w-5" />
+          <Button
+            asChild
+            size="lg"
+            className="bg-blue-600 hover:bg-blue-700 text-white"
+          >
+            <Link
+              href={getWhatsAppUrl('Olá! Gostaria de solicitar um orçamento')}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center"
+            >
+              Solicitar Orçamento
+              <ArrowRight className="ml-2 h-5 w-5" />
+            </Link>
           </Button>
         </div>
       </section>
@@ -193,8 +206,17 @@ export default function ServicosPage() {
                       <div className="flex justify-between items-center mb-4">
                         <span className="text-lg font-semibold text-gray-900">{service.price}</span>
                       </div>
-                      <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white">
-                        Solicitar Orçamento
+                      <Button
+                        asChild
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
+                      >
+                        <Link
+                          href={getWhatsAppUrl(`Olá! Gostaria de solicitar um orçamento para ${service.title}`)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Solicitar Orçamento
+                        </Link>
                       </Button>
                     </div>
                   </CardContent>
@@ -275,11 +297,32 @@ export default function ServicosPage() {
             Entre em contato conosco e descubra como podemos ajudar seu negócio a crescer.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
-              Agendar Consulta Gratuita
+            <Button
+              asChild
+              size="lg"
+              className="bg-white text-blue-600 hover:bg-gray-100"
+            >
+              <Link
+                href={getWhatsAppUrl('Olá! Gostaria de agendar uma consulta gratuita')}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Agendar Consulta Gratuita
+              </Link>
             </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
-              Solicitar Orçamento
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="border-white text-white hover:bg-white hover:text-blue-600"
+            >
+              <Link
+                href={getWhatsAppUrl('Olá! Gostaria de solicitar um orçamento')}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Solicitar Orçamento
+              </Link>
             </Button>
           </div>
         </div>
