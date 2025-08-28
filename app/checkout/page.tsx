@@ -7,6 +7,8 @@ import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
+import { useSearchParams } from 'next/navigation';
+import { usePlans } from '@/hooks/usePlans';
 
 import {
   Card,
@@ -20,6 +22,10 @@ import { Separator } from '@/components/ui/separator';
 
 export default function CheckoutPage() {
   const { user } = useAuth();
+  const searchParams = useSearchParams();
+  const { plans } = usePlans();
+  const planSlug = searchParams.get('plan') || 'premium';
+  const selectedPlan = plans.find((p) => p.slug === planSlug);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [formData, setFormData] = useState({
     cpf: '',
@@ -57,11 +63,26 @@ export default function CheckoutPage() {
             <CardHeader>
               <CardTitle>Checkout</CardTitle>
               <CardDescription>
-                Finalize sua assinatura do plano premium.
+                {selectedPlan
+                  ? `Finalize sua assinatura do plano ${selectedPlan.name}.`
+                  : 'Carregando informações do plano...'}
               </CardDescription>
             </CardHeader>
             <form onSubmit={handleSubmit}>
               <CardContent className="space-y-8">
+                {selectedPlan && (
+                  <div className="p-4 bg-gray-50 rounded-md">
+                    <h2 className="text-md font-semibold">Plano Selecionado</h2>
+                    <p className="text-sm text-gray-600">
+                      {selectedPlan.name} - R$ {selectedPlan.price}/mês
+                    </p>
+                    {selectedPlan.humanizations_per_month !== null && (
+                      <p className="text-xs text-gray-500">
+                        {selectedPlan.humanizations_per_month} humanizações por mês
+                      </p>
+                    )}
+                  </div>
+                )}
                 <div>
                   <h2 className="text-lg font-semibold mb-4">
                     Informações Pessoais

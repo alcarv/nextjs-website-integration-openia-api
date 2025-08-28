@@ -56,9 +56,11 @@ export default function HumanizeText() {
     return getWordCount(inputText) > currentPlan.word_limit;
   };
 
-  const handleUpgrade = () => {
+  const handleUpgrade = (planSlug?: string) => {
     if (user) {
-      router.push('/checkout');
+      const slug =
+        planSlug || (currentPlan?.slug === 'free' ? 'pro' : 'premium');
+      router.push(`/checkout?plan=${slug}`);
     } else {
       setShowAuthModal(true);
     }
@@ -208,7 +210,7 @@ export default function HumanizeText() {
                   {currentPlan?.slug !== 'premium' && (
                     <Button
                       size="sm"
-                      onClick={handleUpgrade}
+                      onClick={() => handleUpgrade()}
                       className="bg-gradient-to-r from-blue-600 to-red-600 text-white"
                     >
                       Fazer Upgrade
@@ -621,7 +623,10 @@ export default function HumanizeText() {
                     <span>Histórico de textos</span>
                   </li>
                 </ul>
-                <Button className="w-full bg-blue-500 hover:bg-blue-600 text-white">
+                <Button
+                  className="w-full bg-blue-500 hover:bg-blue-600 text-white"
+                  onClick={() => handleUpgrade('pro')}
+                >
                   Escolher Pro
                 </Button>
               </CardContent>
@@ -678,7 +683,10 @@ export default function HumanizeText() {
                     <span>Consultoria personalizada</span>
                   </li>
                 </ul>
-                <Button className="w-full bg-gradient-to-r from-blue-600 to-red-600 hover:from-blue-700 hover:to-red-700 text-white">
+                <Button
+                  className="w-full bg-gradient-to-r from-blue-600 to-red-600 hover:from-blue-700 hover:to-red-700 text-white"
+                  onClick={() => handleUpgrade('premium')}
+                >
                   Escolher Premium
                 </Button>
               </CardContent>
