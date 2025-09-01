@@ -6,7 +6,11 @@ import { supabase, User } from '@/lib/supabase';
 interface AuthContextType {
   user: User | null;
   loading: boolean;
-  signUp: (email: string, password: string, name: string) => Promise<User | null>;
+  signUp: (
+    email: string,
+    password: string,
+    name: string
+  ) => Promise<{ user: User | null; needsVerification: boolean }>;
   signIn: (email: string, password: string) => Promise<User | null>;
   signOut: () => Promise<void>;
   refreshUser: () => Promise<void>;
@@ -63,12 +67,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       password,
       options: {
         data: { name },
+        emailRedirectTo: typeof window !== 'undefined' ? window.location.origin : undefined,
       },
     });
 
     if (error) throw error;
 
-    return data.user ? await fetchUserData(data.user.id) : null;
+    // If email confirmation is required, no session will be active
+    const needsVerification = !data.session;
+    if (data.session && data.user) {
+      const u = await fetchUserData(data.user.id);
+      return { user: u, needsVerification };
+    }
+    return { user: null, needsVerification };
   };
 
   const signIn = async (email: string, password: string) => {

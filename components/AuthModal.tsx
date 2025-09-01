@@ -23,6 +23,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
     name: '',
   });
   const { signIn, signUp } = useAuth();
+  const [tab, setTab] = useState<'signin' | 'signup'>('signin');
   const { toast } = useToast();
 
   const handleSubmit = async (type: 'signin' | 'signup') => {
@@ -30,19 +31,32 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
     
     try {
       if (type === 'signup') {
-        await signUp(formData.email, formData.password, formData.name);
-        toast({
-          title: "Conta criada!",
-          description: "Sua conta foi criada com sucesso. Você pode começar a usar o humanizador.",
-        });
+        const { needsVerification } = await signUp(
+          formData.email,
+          formData.password,
+          formData.name
+        );
+        if (needsVerification) {
+          toast({
+            title: 'Verifique seu email',
+            description: 'Enviamos um link de confirmação para concluir o cadastro.',
+          });
+          setTab('signin');
+        } else {
+          toast({
+            title: 'Conta criada!',
+            description: 'Cadastro concluído. Você já pode usar o humanizador.',
+          });
+          onClose();
+        }
       } else {
         await signIn(formData.email, formData.password);
         toast({
           title: "Login realizado!",
           description: "Bem-vindo de volta!",
         });
+        onClose();
       }
-      onClose();
     } catch (error: any) {
       toast({
         title: "Erro",
@@ -64,7 +78,7 @@ export default function AuthModal({ isOpen, onClose }: AuthModalProps) {
           </DialogDescription>
         </DialogHeader>
 
-        <Tabs defaultValue="signin" className="w-full">
+        <Tabs value={tab} onValueChange={(v) => setTab(v as 'signin' | 'signup')} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="signin">Entrar</TabsTrigger>
             <TabsTrigger value="signup">Criar Conta</TabsTrigger>

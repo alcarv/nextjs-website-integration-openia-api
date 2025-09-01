@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { useSearchParams } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { usePlans } from '@/hooks/usePlans';
 import { 
   CreditCard, 
@@ -18,6 +18,7 @@ import {
   Shield,
   Zap
 } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 import {
   Card,
@@ -31,6 +32,7 @@ import { Separator } from '@/components/ui/separator';
 
 export default function CheckoutPage() {
   const { user } = useAuth();
+  const router = useRouter();
   const searchParams = useSearchParams();
   const { plans } = usePlans();
   const planSlug = searchParams.get('plan') || 'intermediate';
@@ -99,6 +101,16 @@ export default function CheckoutPage() {
       <Navigation />
       {user ? (
         <div className="max-w-4xl mx-auto px-4 py-20">
+          <div className="mb-4">
+            <Button
+              type="button"
+              onClick={() => router.push('/humanizar#planos')}
+              className="inline-flex items-center gap-2 border border-gray-300 bg-white text-gray-700 hover:bg-gray-50"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              Voltar aos Planos
+            </Button>
+          </div>
           <Card className="shadow-lg">
             <CardHeader>
               <CardTitle>Checkout</CardTitle>
