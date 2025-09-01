@@ -62,7 +62,7 @@ const services = [
   {
     title: 'Humanização de Textos IA',
     description: 'Transforme textos de IA em conteúdo natural e autêntico.',
-    price: 'Planos a partir de R$ 29/mês'
+    price: 'Planos a partir de R$ 17,90/mês'
   }
 ];
 

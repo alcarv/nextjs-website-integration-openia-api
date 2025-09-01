@@ -39,8 +39,7 @@ const teamLevels = [
     ],
     price: 'Custo-Benefício',
     color: 'green',
-    guarantee: 'Supervisão técnica em cada etapa',
-    popular: true
+    guarantee: 'Supervisão técnica em cada etapa'
   },
   {
     icon: Crown,
@@ -57,7 +56,8 @@ const teamLevels = [
     ],
     price: 'Premium',
     color: 'purple',
-    guarantee: 'Maturidade acadêmica e argumentação sólida'
+    guarantee: 'Maturidade acadêmica e argumentação sólida',
+    popular: true
   }
 ];
 

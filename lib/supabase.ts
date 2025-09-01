@@ -9,8 +9,9 @@ export type User = {
   id: string;
   email: string;
   name: string;
-  plan: 'free' | 'pro' | 'premium';
+  plan: 'free' | 'basic' | 'intermediate' | 'advanced' | 'professional';
   usage_count: number;
+  characters_used: number;
   usage_reset_date: string;
   created_at: string;
 };
@@ -29,4 +30,5 @@ export type Plan = {
   price: number;
   humanizations_per_month: number | null;
   word_limit: number | null;
+  character_quota: number | null;
 };

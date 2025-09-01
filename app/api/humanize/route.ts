@@ -8,7 +8,7 @@ const openai = new OpenAI({
 
 export async function POST(request: NextRequest) {
   try {
-    const { text, wordCount, versions = 1 } = await request.json();
+    const { text, versions = 1 } = await request.json();
     const userId = request.headers.get('Authorization')?.replace('Bearer ', '');
 
     if (!userId) {
@@ -39,18 +39,45 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check usage limits for free users
+    // Enforce free plan limits (requests + words per text)
     if (user.plan === 'free') {
-      if (user.usage_count >= 3) {
+      // hard cap: 3 uses and 200 words per text
+      if ((user.usage_count ?? 0) >= 3) {
         return NextResponse.json(
-          { error: 'Limite de uso atingido. Faça upgrade para continuar.' },
+          { error: 'Limite de uso atingido no plano gratuito. Faça upgrade para continuar.' },
           { status: 403 }
         );
       }
 
-      if (wordCount > 200) {
+      const words = text.trim().split(/\s+/).filter((w: string) => w.length > 0).length;
+      if (words > 200) {
         return NextResponse.json(
-          { error: 'Limite de palavras excedido para plano gratuito.' },
+          { error: 'Limite de palavras excedido para o plano gratuito (máx. 200 por texto).' },
+          { status: 403 }
+        );
+      }
+    }
+
+    // Enforce character quota by plan for paid tiers
+    const { data: plan, error: planError } = await supabase
+      .from('plans')
+      .select('*')
+      .eq('slug', user.plan)
+      .single();
+
+    if (planError || !plan) {
+      return NextResponse.json(
+        { error: 'Plano não encontrado para o usuário' },
+        { status: 400 }
+      );
+    }
+
+    const charCount = text.length;
+    if (user.plan !== 'free' && plan.character_quota !== null && plan.character_quota !== undefined) {
+      const used = user.characters_used ?? 0;
+      if (used + charCount > plan.character_quota) {
+        return NextResponse.json(
+          { error: 'Limite de caracteres do plano atingido. Faça upgrade para continuar.' },
           { status: 403 }
         );
       }
@@ -98,10 +125,13 @@ Regras importantes:
       throw new Error('Erro ao gerar texto humanizado');
     }
 
-    // Update user usage count
+    // Update user usage: requests count and characters used
     const { error: updateError } = await supabase
       .from('users')
-      .update({ usage_count: user.usage_count + 1 })
+      .update({ 
+        usage_count: (user.usage_count ?? 0) + 1,
+        characters_used: (user.characters_used ?? 0) + charCount
+      })
       .eq('id', userId);
 
     if (updateError) {
@@ -114,7 +144,7 @@ Regras importantes:
       .insert([
         {
           user_id: userId,
-          text_length: wordCount,
+          text_length: charCount,
         },
       ]);
 

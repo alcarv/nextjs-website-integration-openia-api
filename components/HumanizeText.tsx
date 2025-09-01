@@ -38,30 +38,32 @@ export default function HumanizeText() {
   const { user, refreshUser } = useAuth();
   const router = useRouter();
   const { plans } = usePlans();
-  const freePlan = plans.find((p) => p.slug === 'free');
-  const proPlan = plans.find((p) => p.slug === 'pro');
-  const premiumPlan = plans.find((p) => p.slug === 'premium');
   const currentPlan = plans.find((p) => p.slug === user?.plan);
+  const freePlan = plans.find((p) => p.slug === 'free');
   
   const canUseService = () => {
     if (!user || !currentPlan) return false;
-    if (currentPlan.humanizations_per_month === null) return true;
-    return user.usage_count < currentPlan.humanizations_per_month;
+    if (currentPlan.character_quota === null) return true;
+    const used = (user as any)?.characters_used ?? 0;
+    return used < (currentPlan.character_quota ?? 0);
   };
 
-  const getWordCount = (text: string) => {
-    return text.trim().split(/\s+/).filter(word => word.length > 0).length;
-  };
-
-  const exceedsWordLimit = () => {
-    if (!user || !currentPlan || currentPlan.word_limit === null) return false;
-    return getWordCount(inputText) > currentPlan.word_limit;
+  const getCharCount = (text: string) => text.length;
+  const getWordCount = (text: string) => text.trim().split(/\s+/).filter(w => w.length > 0).length;
+  const exceedsLimits = () => {
+    if (!user || !currentPlan) return false;
+    if (user.plan === 'free') {
+      const wl = currentPlan.word_limit ?? 200;
+      return getWordCount(inputText) > wl;
+    }
+    if (currentPlan.character_quota === null) return false;
+    const used = (user as any)?.characters_used ?? 0;
+    return used + getCharCount(inputText) > (currentPlan.character_quota ?? 0);
   };
 
   const handleUpgrade = (planSlug?: string) => {
     if (user) {
-      const slug =
-        planSlug || (currentPlan?.slug === 'free' ? 'pro' : 'premium');
+      const slug = planSlug || 'intermediate';
       router.push(`/checkout?plan=${slug}`);
     } else {
       setShowAuthModal(true);
@@ -74,19 +76,12 @@ export default function HumanizeText() {
       return;
     }
 
-    if (!canUseService()) {
+    if (exceedsLimits()) {
       toast({
-        title: "Limite atingido",
-        description: "Você atingiu o limite de uso gratuito. Faça upgrade para continuar.",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    if (exceedsWordLimit()) {
-      toast({
-        title: "Limite de palavras",
-        description: `Seu plano permite até ${currentPlan?.word_limit ?? 0} palavras por texto. Faça upgrade para textos maiores.`,
+        title: user?.plan === 'free' ? 'Limite de palavras' : 'Limite de caracteres',
+        description: user?.plan === 'free'
+          ? `Seu plano gratuito permite até ${currentPlan?.word_limit ?? 200} palavras por texto.`
+          : 'Seu plano não possui saldo suficiente de caracteres para este texto. Faça upgrade para continuar.',
         variant: "destructive",
       });
       return;
@@ -110,10 +105,7 @@ export default function HumanizeText() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${user.id}`,
         },
-        body: JSON.stringify({ 
-          text: inputText,
-          wordCount: getWordCount(inputText)
-        }),
+        body: JSON.stringify({ text: inputText }),
       });
 
       if (!response.ok) {
@@ -169,13 +161,19 @@ export default function HumanizeText() {
     }
   };
 
-  const usagePercentage =
-    user && currentPlan && currentPlan.humanizations_per_month !== null
-      ? (user.usage_count / currentPlan.humanizations_per_month) * 100
-      : 0;
+  const usagePercentage = (() => {
+    if (!user || !currentPlan) return 0;
+    if (user.plan === 'free' && currentPlan.humanizations_per_month !== null) {
+      return ((user.usage_count ?? 0) / (currentPlan.humanizations_per_month ?? 1)) * 100;
+    }
+    if (currentPlan.character_quota !== null) {
+      return (((user as any).characters_used ?? 0) / (currentPlan.character_quota ?? 1)) * 100;
+    }
+    return 0;
+  })();
+  const charCount = getCharCount(inputText);
   const wordCount = getWordCount(inputText);
-  const isOverWordLimit =
-    currentPlan && currentPlan.word_limit !== null && wordCount > currentPlan.word_limit;
+  const isOver = exceedsLimits();
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -197,26 +195,36 @@ export default function HumanizeText() {
               <CardContent className="p-6">
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-2">
-                    {currentPlan?.slug === 'premium' ? (
+                    {currentPlan?.slug === 'professional' ? (
                       <div className="flex items-center space-x-2">
                         <Crown className="h-5 w-5 text-yellow-500" />
                         <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-red-600">
-                          Plano Premium
+                          Plano Profissional
                         </span>
                       </div>
-                    ) : currentPlan?.slug === 'pro' ? (
+                    ) : currentPlan?.slug === 'advanced' ? (
+                      <div className="flex items-center space-x-2">
+                        <Star className="h-5 w-5 text-yellow-500" />
+                        <span className="font-semibold">Plano Avançado</span>
+                      </div>
+                    ) : currentPlan?.slug === 'intermediate' ? (
                       <div className="flex items-center space-x-2">
                         <Zap className="h-5 w-5 text-blue-600" />
-                        <span className="font-semibold">Plano Pro</span>
+                        <span className="font-semibold">Plano Intermediário</span>
                       </div>
-                    ) : (
+                    ) : currentPlan?.slug === 'free' ? (
                       <div className="flex items-center space-x-2">
                         <User className="h-5 w-5 text-blue-600" />
                         <span className="font-semibold">Plano Gratuito</span>
                       </div>
+                    ) : (
+                      <div className="flex items-center space-x-2">
+                        <User className="h-5 w-5 text-blue-600" />
+                        <span className="font-semibold">Plano Básico</span>
+                      </div>
                     )}
                   </div>
-                  {currentPlan?.slug !== 'premium' && (
+                  {currentPlan?.slug !== 'professional' && (
                     <Button
                       size="sm"
                       onClick={() => handleUpgrade()}
@@ -226,17 +234,30 @@ export default function HumanizeText() {
                     </Button>
                   )}
                 </div>
-                {currentPlan && currentPlan.humanizations_per_month !== null && (
+                {currentPlan && user?.plan !== 'free' && currentPlan.character_quota !== null && (
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span>
+                        Uso de caracteres: {(user as any).characters_used ?? 0}/{currentPlan.character_quota}
+                      </span>
+                      <span>
+                        {(currentPlan.character_quota ?? 0) - ((user as any).characters_used ?? 0)} restantes
+                      </span>
+                    </div>
+                    <Progress value={Math.min(100, usagePercentage)} className="h-2" />
+                  </div>
+                )}
+                {currentPlan && user?.plan === 'free' && currentPlan.humanizations_per_month !== null && (
                   <div className="space-y-2">
                     <div className="flex justify-between text-sm">
                       <span>
                         Uso mensal: {user.usage_count}/{currentPlan.humanizations_per_month}
                       </span>
                       <span>
-                        {currentPlan.humanizations_per_month - user.usage_count} restantes
+                        {(currentPlan.humanizations_per_month ?? 0) - (user.usage_count ?? 0)} restantes
                       </span>
                     </div>
-                    <Progress value={usagePercentage} className="h-2" />
+                    <Progress value={Math.min(100, usagePercentage)} className="h-2" />
                     {currentPlan.word_limit && (
                       <p className="text-xs text-gray-500">
                         Limite de {currentPlan.word_limit} palavras por texto
@@ -244,10 +265,7 @@ export default function HumanizeText() {
                     )}
                   </div>
                 )}
-
-                {currentPlan && currentPlan.humanizations_per_month === null && (
-                  <p className="text-sm text-green-600">✓ Uso ilimitado ativo</p>
-                )}
+                <p className="text-sm text-gray-500 mt-2">Consumo por texto com base em caracteres.</p>
               </CardContent>
             </Card>
           </div>
@@ -270,16 +288,11 @@ export default function HumanizeText() {
                 placeholder="Cole seu texto gerado por IA aqui..."
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
-                className={`min-h-[300px] resize-none ${isOverWordLimit ? 'border-red-500' : ''}`}
+                className={`min-h-[300px] resize-none ${isOver ? 'border-red-500' : ''}`}
               />
               <div className="flex justify-between items-center mt-4">
-                <span className={`text-sm ${isOverWordLimit ? 'text-red-500' : 'text-gray-500'}`}>
-                  {wordCount} palavras ({inputText.length} caracteres)
-                  {isOverWordLimit && (
-                    <span className="block text-xs">
-                      Limite: {currentPlan?.word_limit ?? 0} palavras para seu plano
-                    </span>
-                  )}
+                <span className={`text-sm ${isOver ? 'text-red-500' : 'text-gray-500'}`}>
+                  {user?.plan === 'free' ? `${wordCount} palavras (${charCount} caracteres)` : `${charCount} caracteres`}
                 </span>
                 {!user ? (
                   <Button 
@@ -307,7 +320,7 @@ export default function HumanizeText() {
                     </div>
                     <Button 
                       onClick={handleHumanize}
-                      disabled={Boolean(isLoading || !inputText.trim() || !canUseService() || isOverWordLimit)}
+                      disabled={Boolean(isLoading || !inputText.trim() || !canUseService() || isOver)}
                       className="bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 w-full"
                     >
                       {isLoading ? 'Humanizando...' : `Gerar ${selectedVersions} ${selectedVersions === 1 ? 'Versão' : 'Versões'}`}
@@ -578,23 +591,18 @@ export default function HumanizeText() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Button 
-                  onClick={() => setShowAuthModal(true)}
+                  onClick={() => router.push('#planos')}
                   size="lg" 
                   className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-4 text-lg font-semibold"
                 >
-                  Começar Agora - Grátis
+                  Ver Planos
                 </Button>
-                <div className="flex items-center justify-center space-x-4 text-sm opacity-90">
-                  <span>✓ Sem cartão de crédito</span>
-                  <span>✓ 3 usos gratuitos</span>
-                  <span>✓ Resultados instantâneos</span>
-                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="mt-20 py-16 bg-white rounded-2xl shadow-lg">
+        <div id="planos" className="mt-20 py-16 bg-white rounded-2xl shadow-lg">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-gray-900 mb-4">
               Escolha o <span className="text-gradient">Plano Ideal</span>
@@ -603,168 +611,57 @@ export default function HumanizeText() {
               Planos flexíveis para atender suas necessidades de humanização de textos
             </p>
           </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto px-8">
-            {/* Free Plan */}
-            <Card className="relative bg-white border-2 border-gray-200 hover:border-blue-300 transition-colors">
-              <CardHeader className="text-center pb-8">
-                <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                  <User className="h-8 w-8 text-blue-600" />
-                </div>
-                <CardTitle className="text-2xl font-bold text-gray-900">Gratuito</CardTitle>
-                <div className="mt-4">
-                  <span className="text-4xl font-bold text-gray-900">
-                    R$ {freePlan?.price ?? 0}
-                  </span>
-                  <span className="text-gray-500">/mês</span>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <ul className="space-y-4 mb-8">
-                  <li className="flex items-center">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                    <span>
-                      {freePlan?.humanizations_per_month ?? 0} humanizações por mês
-                    </span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                    <span>
-                      Até {freePlan?.word_limit ?? 0} palavras por texto
-                    </span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                    <span>Qualidade profissional</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                    <span>Suporte por email</span>
-                  </li>
-                </ul>
-                <Button 
-                  onClick={() => setShowAuthModal(true)}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
-                >
-                  {user ? 'Plano Atual' : 'Começar Grátis'}
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Pro Plan */}
-            <Card className="relative bg-white border-2 border-blue-500 hover:border-blue-600 transition-colors">
-              <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                <span className="bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-medium">
-                  Mais Popular
-                </span>
-              </div>
-              <CardHeader className="text-center pb-8">
-                <div className="mx-auto w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mb-4">
-                  <Zap className="h-8 w-8 text-white" />
-                </div>
-                <CardTitle className="text-2xl font-bold text-gray-900">Pro</CardTitle>
-                <div className="mt-4">
-                  <span className="text-4xl font-bold text-gray-900">
-                    R$ {proPlan?.price ?? 0}
-                  </span>
-                  <span className="text-gray-500">/mês</span>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <ul className="space-y-4 mb-8">
-                  <li className="flex items-center">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                    <span>
-                      {proPlan?.humanizations_per_month ?? 0} humanizações por mês
-                    </span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                    <span>
-                      Até {proPlan?.word_limit ?? 0} palavras por texto
-                    </span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                    <span>Processamento prioritário</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                    <span>Suporte prioritário</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                    <span>Histórico de textos</span>
-                  </li>
-                </ul>
-                <Button
-                  className="w-full bg-blue-500 hover:bg-blue-600 text-white"
-                  onClick={() => handleUpgrade('pro')}
-                >
-                  Escolher Pro
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Premium Plan */}
-            <Card className="relative bg-white border-2 border-gradient-to-r from-blue-600 to-red-600 hover:shadow-lg transition-shadow">
-              <CardHeader className="text-center pb-8">
-                <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-600 to-red-600 rounded-full flex items-center justify-center mb-4">
-                  <Crown className="h-8 w-8 text-white" />
-                </div>
-                <CardTitle className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-red-600">
-                  Premium
-                </CardTitle>
-                <div className="mt-4">
-                  <span className="text-4xl font-bold text-gray-900">
-                    R$ {premiumPlan?.price ?? 0}
-                  </span>
-                  <span className="text-gray-500">/mês</span>
-                </div>
-              </CardHeader>
-              <CardContent className="pt-0">
-                <ul className="space-y-4 mb-8">
-                  <li className="flex items-center">
-                    <InfinityIcon className="h-5 w-5 text-blue-600 mr-3" />
-                    <span>
-                      {premiumPlan?.humanizations_per_month
-                        ? `${premiumPlan.humanizations_per_month} humanizações por mês`
-                        : 'Humanizações ilimitadas'}
-                    </span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                    <span>
-                      {premiumPlan?.word_limit
-                        ? `Até ${premiumPlan.word_limit} palavras por texto`
-                        : 'Textos de qualquer tamanho'}
-                    </span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                    <span>Processamento instantâneo</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                    <span>Suporte 24/7</span>
-                  </li>
-                  <li className="flex items-center">
-                    <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
-                    <span>API de integração</span>
-                  </li>
-                  <li className="flex items-center">
-                    <Star className="h-5 w-5 text-yellow-500 mr-3" />
-                    <span>Consultoria personalizada</span>
-                  </li>
-                </ul>
-                <Button
-                  className="w-full bg-gradient-to-r from-blue-600 to-red-600 hover:from-blue-700 hover:to-red-700 text-white"
-                  onClick={() => handleUpgrade('premium')}
-                >
-                  Escolher Premium
-                </Button>
-              </CardContent>
-            </Card>
+          <div className="grid md:grid-cols-4 gap-8 max-w-6xl mx-auto px-8">
+            {plans
+              .slice()
+              .filter((p) => p.slug !== 'free')
+              .sort((a, b) => (a.price ?? 0) - (b.price ?? 0))
+              .map((plan) => {
+                const isPopular = plan.slug === 'advanced';
+                return (
+                  <Card key={plan.id} className={`relative bg-white border-2 ${isPopular ? 'border-blue-500 hover:border-blue-600' : 'border-gray-200 hover:border-blue-300'} transition-colors`}>
+                    {isPopular && (
+                      <div className="absolute top-3 left-1/2 -translate-x-1/2 transform">
+                        <span className="bg-blue-500 text-white px-3 py-1 rounded-full text-xs font-medium shadow-sm">
+                          Mais Popular
+                        </span>
+                      </div>
+                    )}
+                    <CardHeader className="text-center pb-8">
+                      <div className={`mx-auto w-16 h-16 ${isPopular ? 'bg-blue-500' : 'bg-blue-100'} rounded-full flex items-center justify-center mb-4`}>
+                        {isPopular ? <Zap className="h-8 w-8 text-white" /> : <User className="h-8 w-8 text-blue-600" />}
+                      </div>
+                      <CardTitle className="text-2xl font-bold text-gray-900">{plan.name}</CardTitle>
+                      <div className="mt-4">
+                        <span className="text-4xl font-bold text-gray-900">R$ {plan.price}</span>
+                        <span className="text-gray-500">/mês</span>
+                      </div>
+                    </CardHeader>
+                    <CardContent className="pt-0">
+                      <ul className="space-y-4 mb-8">
+                        <li className="flex items-center">
+                          <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                          <span>Até {plan.character_quota?.toLocaleString('pt-BR')} caracteres por mês</span>
+                        </li>
+                        <li className="flex items-center">
+                          <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                          <span>Qualidade profissional</span>
+                        </li>
+                        <li className="flex items-center">
+                          <CheckCircle className="h-5 w-5 text-green-500 mr-3" />
+                          <span>Suporte por email</span>
+                        </li>
+                      </ul>
+                      <Button
+                        className={`w-full ${isPopular ? 'bg-blue-500 hover:bg-blue-600' : 'bg-blue-600 hover:bg-blue-700'} text-white`}
+                        onClick={() => handleUpgrade(plan.slug)}
+                      >
+                        Escolher {plan.name}
+                      </Button>
+                    </CardContent>
+                  </Card>
+                );
+            })}
           </div>
 
           {/* Features comparison */}

@@ -33,7 +33,7 @@ export default function CheckoutPage() {
   const { user } = useAuth();
   const searchParams = useSearchParams();
   const { plans } = usePlans();
-  const planSlug = searchParams.get('plan') || 'premium';
+  const planSlug = searchParams.get('plan') || 'intermediate';
   const selectedPlan = plans.find((p) => p.slug === planSlug);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [formData, setFormData] = useState({
@@ -116,9 +116,9 @@ export default function CheckoutPage() {
                     <p className="text-sm text-gray-600">
                       {selectedPlan.name} - R$ {selectedPlan.price}/mês
                     </p>
-                    {selectedPlan.humanizations_per_month !== null && (
+                    {selectedPlan.character_quota !== null && (
                       <p className="text-xs text-gray-500">
-                        {selectedPlan.humanizations_per_month} humanizações por mês
+                        Até {selectedPlan.character_quota?.toLocaleString('pt-BR')} caracteres por mês
                       </p>
                     )}
                   </div>
