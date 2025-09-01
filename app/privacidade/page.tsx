@@ -186,7 +186,7 @@ const contactInfo = [
   {
     icon: Phone,
     title: 'Telefone',
-    info: '+55 (11) 99999-9999',
+    info: '+55 (64) 99676-2041',
     description: 'Atendimento de segunda a sexta, 9h às 18h'
   },
   {
@@ -244,7 +244,7 @@ export default function PrivacidadePage() {
                   <p className="text-gray-700 leading-relaxed">
                     Esta Política de Privacidade descreve como a <strong>Dra. Ruth Monielly</strong> coleta, 
                     usa, armazena e protege suas informações pessoais quando você utiliza nossos serviços 
-                    de advocacia, copywriting e humanização de textos IA. Estamos comprometidos com a 
+                    de advocacia, assessoria acadêmica e humanização de textos IA. Estamos comprometidos com a 
                     transparência e o cumprimento da Lei Geral de Proteção de Dados (LGPD).
                   </p>
                 </div>

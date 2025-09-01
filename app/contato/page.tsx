@@ -26,7 +26,7 @@ const contactInfo = [
   {
     icon: Phone,
     title: 'Telefone',
-    info: '+55 (11) 99999-9999',
+    info: '+55 (64) 99676-2041',
     description: 'Seg a Sex, 9h às 18h'
   },
   {
@@ -56,9 +56,8 @@ const services = [
     price: 'A partir de R$ 200/hora'
   },
   {
-    title: 'Copywriting Profissional',
-    description: 'Textos persuasivos para sales pages, e-mails e campanhas.',
-    price: 'A partir de R$ 150/projeto'
+    title: 'Redação e Assessoria Profissional',
+    description: 'Textos acadêmicos e jurídicos com rigor e qualidade.',
   },
   {
     title: 'Humanização de Textos IA',
@@ -79,8 +78,8 @@ export default function ContatoPage() {
             Entre em <span className="text-gradient">Contato</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Pronto para transformar seus resultados? Vamos conversar sobre como podemos 
-            ajudar seu negócio a crescer com soluções jurídicas e de copywriting.
+            Pronto para transformar seus resultados? Vamos conversar sobre como podemos
+            ajudar seu negócio a crescer com soluções jurídicas e de redação.
           </p>
           <Button
             asChild
@@ -130,7 +129,7 @@ export default function ContatoPage() {
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="phone">Telefone</Label>
-                    <Input id="phone" placeholder="(11) 99999-9999" />
+                    <Input id="phone" placeholder="(64) 99676-2041" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="company">Empresa (opcional)</Label>

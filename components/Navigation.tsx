@@ -17,7 +17,6 @@ export default function Navigation() {
     { href: '/', label: 'Início', icon: UserIcon },
     { href: '/sobre', label: 'Sobre', icon: UserIcon },
     { href: '/servicos', label: 'Serviços', icon: Scale },
-    { href: '/copywriting', label: 'Copywriting', icon: PenTool },
     { href: '/humanizar', label: 'Humanizar Texto', icon: Bot },
     { href: '/blog', label: 'Blog', icon: BookOpen },
     { href: '/contato', label: 'Contato', icon: Phone },

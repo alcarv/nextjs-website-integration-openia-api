@@ -10,13 +10,11 @@ export default function Hero() {
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="text-center lg:text-left">
             <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6">
-              <span className="text-gradient">Advocacia</span> e{' '}
-              <span className="text-gradient">Copywriting</span> de Excelência
+              <span className="text-gradient">Assessoria Acadêmica, Elaboração</span> e{' '}
+              <span className="text-gradient">Humanização de Textos</span> com Excelência
             </h1>
             <p className="text-xl text-gray-600 mb-8 leading-relaxed">
-              Combinamos expertise jurídica com estratégias de comunicação persuasiva 
-              para garantir os melhores resultados para nossos clientes. Agora com 
-              tecnologia IA para humanizar seus textos.
+              Auxílio personalizado para alunos de graduação, mestrado e doutorado. Desde a elaboração completa de trabalhos, até a paráfrase e humanização acadêmica, entrego textos consistentes, aprofundados e livres de marcas artificiais.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
               <Button
@@ -53,22 +51,22 @@ export default function Hero() {
                 <div className="flex items-center space-x-4 p-4 bg-blue-50 rounded-lg">
                   <Scale className="h-8 w-8 text-blue-600" />
                   <div>
-                    <h3 className="font-semibold text-gray-900">Advocacia</h3>
-                    <p className="text-gray-600 text-sm">Soluções jurídicas completas</p>
+                    <h3 className="font-semibold text-gray-900">Assessoria Acadêmica</h3>
+                    <p className="text-gray-600 text-sm">Acompanhamento especializado em todos os tipos de trabalhos, incluindo artigos, TCCs, dissertações e teses.</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-4 p-4 bg-red-50 rounded-lg">
                   <PenTool className="h-8 w-8 text-red-600" />
                   <div>
-                    <h3 className="font-semibold text-gray-900">Copywriting</h3>
-                    <p className="text-gray-600 text-sm">Comunicação persuasiva</p>
+                    <h3 className="font-semibold text-gray-900">Revisão e Normalização</h3>
+                    <p className="text-gray-600 text-sm">Adequação às normas ABNT e APA, com precisão e técnica.</p>
                   </div>
                 </div>
                 <div className="flex items-center space-x-4 p-4 bg-green-50 rounded-lg">
                   <Shield className="h-8 w-8 text-green-600" />
                   <div>
-                    <h3 className="font-semibold text-gray-900">IA Humanizadora</h3>
-                    <p className="text-gray-600 text-sm">Textos naturais e autênticos</p>
+                    <h3 className="font-semibold text-gray-900">Humanização e Paráfrase</h3>
+                    <p className="text-gray-600 text-sm">Transformação de textos artificiais em produções autênticas, profundas e consistentes.</p>
                   </div>
                 </div>
               </div>

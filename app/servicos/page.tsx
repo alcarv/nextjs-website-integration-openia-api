@@ -22,117 +22,143 @@ import Footer from '@/components/Footer';
 
 const services = [
   {
-    icon: Scale,
-    title: 'Consultoria Jurídica',
-    description: 'Orientação especializada em diversas áreas do direito com foco em resultados práticos e soluções eficientes.',
+    icon: BookOpen,
+    title: 'Assessoria Acadêmica Completa',
+    description: 'Acompanhamento personalizado em todas as etapas da vida acadêmica, com suporte contínuo e soluções sob medida para diferentes níveis de ensino.',
     features: [
-      'Direito Empresarial e Societário',
-      'Direito Civil e Contratos',
-      'Direito Trabalhista',
-      'Consultoria Preventiva',
-      'Análise de Riscos Jurídicos',
-      'Compliance Empresarial'
+      'TCCs (graduação e especialização)',
+      'Dissertações (mestrado)',
+      'Teses (doutorado)',
+      'Pré-projetos e projetos finais'
     ],
-    price: 'A partir de R$ 200/hora',
-    highlight: 'Mais de 10 anos de experiência'
+    price: 'Valores sob consulta',
+    highlight: 'Comprovante de autenticidade incluído',
+    guarantee: 'Sem índice de IA e sem plágio'
   },
   {
-    icon: PenTool,
-    title: 'Copywriting Profissional',
-    description: 'Textos persuasivos que convertem e engajam seu público-alvo, aumentando suas vendas e resultados.',
+    icon: Target,
+    title: 'Projetos Acadêmicos',
+    description: 'Desenvolvimento, estruturação e refinamento de diferentes tipos de projetos exigidos nas universidades.',
     features: [
-      'Sales Pages de Alta Conversão',
-      'E-mail Marketing Estratégico',
-      'Conteúdo para Redes Sociais',
-      'Textos Publicitários',
-      'Landing Pages',
-      'Sequências de Vendas'
+      'Projetos de Extensão',
+      'Projetos Extensionistas',
+      'Projetos Integradores',
+      'Projetos de Pesquisa e Relatórios Técnicos'
     ],
-    price: 'A partir de R$ 150/projeto',
-    highlight: 'ROI comprovado de até 300%'
+    price: 'Valores sob consulta',
+    highlight: 'Comprovante de autenticidade incluído',
+    guarantee: 'Sem índice de IA e sem plágio'
   },
   {
-    icon: FileText,
-    title: 'Redação Jurídica',
-    description: 'Documentos e peças jurídicas elaborados com precisão técnica, clareza e fundamentação sólida.',
+    icon: Award,
+    title: 'Produção Científica',
+    description: 'Elaboração e aprimoramento de textos de alto nível, com rigor metodológico e profundidade teórica.',
     features: [
-      'Contratos Personalizados',
-      'Petições e Recursos',
-      'Pareceres Jurídicos',
-      'Documentos Empresariais',
-      'Termos de Uso e Políticas',
-      'Revisão de Documentos'
+      'Artigos Científicos',
+      'Papers',
+      'Resenhas Críticas',
+      'Ensaios Acadêmicos',
+      'Trabalhos para congressos'
     ],
-    price: 'A partir de R$ 100/documento',
-    highlight: '98% de aprovação judicial'
+    price: 'Valores sob consulta',
+    highlight: 'Comprovante de autenticidade incluído',
+    guarantee: 'Sem índice de IA e sem plágio'
   },
   {
     icon: Users,
-    title: 'Treinamentos Corporativos',
-    description: 'Capacitação especializada em comunicação jurídica e técnicas de copywriting para equipes.',
+    title: 'Orientação Científica',
+    description: 'Suporte direto ao aluno para organização da pesquisa e fortalecimento de ideias.',
     features: [
-      'Workshops Presenciais',
-      'Palestras Motivacionais',
-      'Treinamento Online',
-      'Consultoria em Equipe',
-      'Material Didático Exclusivo',
-      'Acompanhamento Pós-Treinamento'
+      'Estruturação metodológica',
+      'Definição de objetivos',
+      'Acompanhamento durante a escrita',
+      'Direcionamento para defesa oral',
+      'Pesquisa e definição de materiais',
+      'Auxílio personalizado em cada passo'
     ],
-    price: 'A partir de R$ 500/evento',
-    highlight: 'Satisfação de 95% dos participantes'
+    price: 'Valores sob consulta',
+    highlight: 'Suporte personalizado contínuo'
   },
   {
-    icon: Briefcase,
-    title: 'Assessoria Empresarial',
-    description: 'Suporte completo para empresas em questões jurídicas e comunicacionais estratégicas.',
+    icon: PenTool,
+    title: 'Aprimoramento de Textos',
+    description: 'Melhoria e reestruturação de trabalhos já iniciados, elevando o nível de qualidade e clareza.',
     features: [
-      'Compliance Empresarial',
-      'Due Diligence Jurídica',
-      'Estratégia de Comunicação',
-      'Gestão de Riscos',
-      'Auditoria de Processos',
-      'Consultoria Estratégica'
+      'Reescrita de trechos frágeis',
+      'Aprofundamento teórico',
+      'Coesão e coerência textual',
+      'Clareza e fluidez argumentativa'
     ],
-    price: 'Planos mensais a partir de R$ 1.500',
-    highlight: 'Redução de 80% em riscos jurídicos'
+    price: 'Valores sob consulta',
+    highlight: 'Comprovante de autenticidade incluído',
+    guarantee: 'Sem índice de IA e sem plágio'
   },
   {
-    icon: Shield,
-    title: 'Proteção de Marca e PI',
-    description: 'Proteção completa da sua propriedade intelectual e estratégias de marca no ambiente digital.',
+    icon: CheckCircle,
+    title: 'Revisão e Normalização',
+    description: 'Correção técnica e formatação conforme as principais normas exigidas no meio acadêmico.',
     features: [
-      'Registro de Marcas',
-      'Proteção de Propriedade Intelectual',
-      'Contratos de Licenciamento',
-      'Defesa contra Concorrência Desleal',
-      'Monitoramento de Marca',
-      'Estratégias de Proteção Digital'
+      'ABNT',
+      'APA (7ª edição)',
+      'Vancouver',
+      'Ajustes gramaticais e de estilo',
+      'Normas institucionais próprias'
     ],
-    price: 'A partir de R$ 800/processo',
-    highlight: '100% de sucesso em registros'
+    price: 'Valores sob consulta',
+    highlight: 'Formatação profissional garantida'
+  },
+  {
+    icon: PenTool,
+    title: 'Humanização Acadêmica',
+    subtitle: 'Estilo de escrita da Dra. Ruth Moniélly',
+    description: 'Transformação de textos gerados por inteligência artificial em trabalhos consistentes, naturais e autênticos.',
+    features: [
+      'Paráfrase avançada',
+      'Complementação e aprofundamento de conteúdo',
+      'Adequação de linguagem acadêmica',
+      'Eliminação de marcas artificiais'
+    ],
+    price: 'Valores sob consulta',
+    highlight: 'Transformação completa garantida'
+  },
+  {
+    icon: FileText,
+    title: 'Elaboração Completa',
+    description: 'Produção acadêmica feita sob demanda, com base em pesquisa confiável e rigor científico.',
+    features: [
+      'Trabalhos de Conclusão de Curso',
+      'Relatórios acadêmicos',
+      'Monografias',
+      'Estudos de Caso',
+      'Dissertações',
+      'Teses'
+    ],
+    price: 'Valores sob consulta',
+    highlight: 'Comprovante de autenticidade incluído',
+    guarantee: 'Sem índice de IA e sem plágio'
   }
 ];
 
 const benefits = [
   {
     icon: Award,
-    title: 'Expertise Comprovada',
-    description: 'Mais de 10 anos de experiência combinando direito e comunicação estratégica.'
-  },
-  {
-    icon: Target,
-    title: 'Resultados Mensuráveis',
-    description: 'Foco em ROI e resultados concretos para seu negócio e casos jurídicos.'
-  },
-  {
-    icon: Clock,
-    title: 'Agilidade e Eficiência',
-    description: 'Prazos cumpridos e processos otimizados para máxima eficiência.'
+    title: 'Expertise Acadêmica',
+    description: 'Especialização em produção científica com rigor metodológico e fundamentação teórica sólida.'
   },
   {
     icon: Shield,
-    title: 'Confidencialidade Total',
-    description: 'Sigilo profissional absoluto e proteção de dados garantida.'
+    title: 'Originalidade Garantida',
+    description: 'Todos os trabalhos com comprovante de autenticidade, sem plágio e sem índice de IA.'
+  },
+  {
+    icon: Clock,
+    title: 'Prazos Respeitados',
+    description: 'Entregas pontuais com acompanhamento personalizado em todas as etapas.'
+  },
+  {
+    icon: Target,
+    title: 'Qualidade Premium',
+    description: 'Padrão de excelência acadêmica com supervisão técnica especializada.'
   }
 ];
 
@@ -145,11 +171,11 @@ export default function ServicosPage() {
       <section className="gradient-bg py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-            Nossos <span className="text-gradient">Serviços</span>
+            Serviços <span className="text-gradient">Acadêmicos</span>
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Soluções completas que combinam expertise jurídica com estratégias de comunicação 
-            inovadoras para garantir os melhores resultados para nossos clientes.
+            Assessoria acadêmica especializada com rigor metodológico, originalidade garantida 
+            e suporte personalizado em todas as etapas da sua jornada acadêmica.
           </p>
           <Button
             asChild
@@ -184,6 +210,9 @@ export default function ServicosPage() {
                       </div>
                       <div>
                         <CardTitle className="text-xl text-gray-900">{service.title}</CardTitle>
+                        {service.subtitle && (
+                          <div className="text-sm text-gray-600 mt-1">{service.subtitle}</div>
+                        )}
                         <div className="text-sm text-green-600 font-medium mt-1">
                           {service.highlight}
                         </div>
@@ -206,6 +235,12 @@ export default function ServicosPage() {
                       <div className="flex justify-between items-center mb-4">
                         <span className="text-lg font-semibold text-gray-900">{service.price}</span>
                       </div>
+                      {service.guarantee && (
+                        <div className="flex items-center space-x-2 mb-4 p-3 bg-green-50 rounded-lg">
+                          <Shield className="h-4 w-4 text-green-600" />
+                          <span className="text-sm text-green-700">{service.guarantee}</span>
+                        </div>
+                      )}
                       <Button
                         asChild
                         className="w-full bg-blue-600 hover:bg-blue-700 text-white"
@@ -232,10 +267,10 @@ export default function ServicosPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-              Por que escolher nossos <span className="text-gradient">serviços</span>?
+              Por que escolher nossa <span className="text-gradient">assessoria</span>?
             </h2>
             <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Combinamos excelência técnica com inovação para entregar resultados excepcionais.
+              Excelência acadêmica com rigor metodológico e garantia de originalidade.
             </p>
           </div>
 
@@ -270,10 +305,10 @@ export default function ServicosPage() {
 
           <div className="grid md:grid-cols-4 gap-8">
             {[
-              { step: '01', title: 'Análise', description: 'Entendemos suas necessidades e objetivos específicos.' },
-              { step: '02', title: 'Estratégia', description: 'Desenvolvemos uma estratégia personalizada para seu caso.' },
-              { step: '03', title: 'Execução', description: 'Implementamos as soluções com excelência e agilidade.' },
-              { step: '04', title: 'Resultados', description: 'Acompanhamos e otimizamos para máximos resultados.' }
+              { step: '01', title: 'Briefing', description: 'Análise detalhada dos requisitos acadêmicos e objetivos do trabalho.' },
+              { step: '02', title: 'Planejamento', description: 'Estruturação metodológica e cronograma personalizado de execução.' },
+              { step: '03', title: 'Produção', description: 'Desenvolvimento com rigor científico e acompanhamento contínuo.' },
+              { step: '04', title: 'Entrega', description: 'Revisão final, formatação e entrega com comprovantes de originalidade.' }
             ].map((process, index) => (
               <div key={index} className="text-center">
                 <div className="mx-auto w-16 h-16 bg-gradient-to-r from-blue-600 to-red-600 rounded-full flex items-center justify-center mb-6">
@@ -291,10 +326,10 @@ export default function ServicosPage() {
       <section className="py-20 bg-gradient-to-r from-blue-600 to-red-600">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl lg:text-4xl font-bold text-white mb-6">
-            Pronto para transformar seus resultados?
+            Precisa de assessoria acadêmica especializada?
           </h2>
           <p className="text-xl text-white/90 mb-8">
-            Entre em contato conosco e descubra como podemos ajudar seu negócio a crescer.
+            Entre em contato e descubra como podemos ajudar você a alcançar a excelência acadêmica.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Button
@@ -303,11 +338,11 @@ export default function ServicosPage() {
               className="bg-white text-blue-600 hover:bg-gray-100"
             >
               <Link
-                href={getWhatsAppUrl('Olá! Gostaria de agendar uma consulta gratuita')}
+                href={getWhatsAppUrl('Olá! Gostaria de solicitar uma assessoria acadêmica')}
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                Agendar Consulta Gratuita
+                Solicitar Assessoria
               </Link>
             </Button>
             <Button
@@ -317,7 +352,7 @@ export default function ServicosPage() {
               className="border-white text-white hover:bg-white hover:text-blue-600"
             >
               <Link
-                href={getWhatsAppUrl('Olá! Gostaria de solicitar um orçamento')}
+                href={getWhatsAppUrl('Olá! Gostaria de solicitar um orçamento para serviços acadêmicos')}
                 target="_blank"
                 rel="noopener noreferrer"
               >

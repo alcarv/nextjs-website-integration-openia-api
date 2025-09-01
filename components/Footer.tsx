@@ -6,7 +6,6 @@ export default function Footer() {
 
   const services = [
     { name: 'Consultoria Jurídica', href: '/servicos' },
-    { name: 'Copywriting', href: '/copywriting' },
     { name: 'Redação Jurídica', href: '/servicos' },
     { name: 'Humanizar Textos IA', href: '/humanizar' },
     { name: 'Treinamentos', href: '/servicos' },
@@ -42,21 +41,21 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-gray-300 mb-6 leading-relaxed">
-              Combinamos expertise jurídica com estratégias de comunicação inovadoras 
-              para garantir os melhores resultados para nossos clientes.
+              Ajudo alunos de graduação, mestrado e doutorado a desenvolver trabalhos científicos com excelência, 
+              clareza e autenticidade. Especialista em escrita, humanização acadêmica, revisão e estruturação de pesquisas de alto nível.
             </p>
             <div className="space-y-3">
               <div className="flex items-center space-x-3">
                 <Phone className="h-5 w-5 text-blue-400" />
-                <span className="text-gray-300">+55 (11) 99999-9999</span>
+                <span className="text-gray-300">+55 (64) 99676-2041</span>
               </div>
               <div className="flex items-center space-x-3">
                 <Mail className="h-5 w-5 text-blue-400" />
-                <span className="text-gray-300">contato@draruth.com.br</span>
+                <span className="text-gray-300">draruthmoniélly@gmail.com</span>
               </div>
               <div className="flex items-center space-x-3">
                 <MapPin className="h-5 w-5 text-blue-400" />
-                <span className="text-gray-300">São Paulo, SP</span>
+                <span className="text-gray-300">Goías - Atendimento online em todo o Brasil</span>
               </div>
             </div>
           </div>
@@ -165,7 +164,7 @@ export default function Footer() {
             </div>
             <div className="flex items-center space-x-2 text-gray-400 text-sm">
               <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-              <span>Certificado em Copywriting</span>
+              <span>Certificado em Assessoria Acadêmica</span>
             </div>
             <div className="flex items-center space-x-2 text-gray-400 text-sm">
               <span className="w-2 h-2 bg-blue-500 rounded-full"></span>

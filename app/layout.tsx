@@ -7,8 +7,8 @@ import FloatingWhatsApp from '@/components/FloatingWhatsApp';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Dr. Ruth Monielly - Copywriter & Advogado',
-  description: 'Serviços profissionais de copywriting e advocacia. Humanização de textos gerados por IA.',
+  title: 'Dr. Ruth Monielly - Redatora & Advogada',
+  description: 'Serviços profissionais de redação e assesoria acadêmica. Humanização de textos gerados por IA.',
 };
 
 export default function RootLayout({
