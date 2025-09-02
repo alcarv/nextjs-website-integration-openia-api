@@ -2,6 +2,7 @@ import Navigation from '@/components/Navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import Image from 'next/image';
 import { getWhatsAppUrl } from '@/lib/whatsapp';
 import {
   Scale,
@@ -196,6 +197,19 @@ export default function SobrePage() {
             </div>
 
             <div className="relative">
+                <Image
+                  src="https://images.pexels.com/photos/4427430/pexels-photo-4427430.jpeg?auto=compress&cs=tinysrgb&w=800"
+                  alt="Dra. Ruth Monielly"
+                  width={800}
+                  height={256}
+                  className="w-full h-64 object-cover rounded-2xl shadow-lg"
+                  priority
+                />
+                <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg">
+                  <p className="text-sm font-medium text-gray-900">Escritório Dra. Ruth Monielly</p>
+                  <p className="text-xs text-gray-600">São Paulo, SP</p>
+                </div>
+              </div>
               <div className="bg-gradient-to-br from-blue-50 to-red-50 rounded-2xl p-8">
                 <Quote className="h-12 w-12 text-blue-600 mb-6" />
                 <blockquote className="text-xl text-gray-700 italic mb-6">
