@@ -196,19 +196,39 @@ export default function SobrePage() {
               </div>
             </div>
 
-            <div className="relative">
-              <div className="mb-8">
-                <Image
-                  src="https://images.pexels.com/photos/4427430/pexels-photo-4427430.jpeg?auto=compress&cs=tinysrgb&w=800"
-                  alt="Dra. Ruth Monielly"
-                  width={800}
-                  height={256}
-                  className="w-full h-64 object-cover rounded-2xl shadow-lg"
-                  priority
-                />
-                <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg">
-                  <p className="text-sm font-medium text-gray-900">Escritório Dra. Ruth Monielly</p>
-                  <p className="text-xs text-gray-600">São Paulo, SP</p>
+            <div>
+              <div className="grid grid-cols-2 gap-4 mb-8">
+                <div className="relative col-span-2">
+                  <Image
+                    src="https://images.pexels.com/photos/4427430/pexels-photo-4427430.jpeg?auto=compress&cs=tinysrgb&w=1200"
+                    alt="Dra. Ruth Monielly"
+                    width={1200}
+                    height={384}
+                    className="w-full h-64 md:h-80 object-cover rounded-2xl shadow-lg"
+                    priority
+                  />
+                  <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg shadow">
+                    <p className="text-sm font-medium text-gray-900">Escritório Dra. Ruth Monielly</p>
+                    <p className="text-xs text-gray-600">São Paulo, SP</p>
+                  </div>
+                </div>
+                <div>
+                  <Image
+                    src="https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=800"
+                    alt="Atendimento profissional"
+                    width={800}
+                    height={320}
+                    className="w-full h-40 md:h-48 object-cover rounded-2xl shadow-lg"
+                  />
+                </div>
+                <div>
+                  <Image
+                    src="https://images.pexels.com/photos/3182763/pexels-photo-3182763.jpeg?auto=compress&cs=tinysrgb&w=800"
+                    alt="Trabalho em equipe"
+                    width={800}
+                    height={320}
+                    className="w-full h-40 md:h-48 object-cover rounded-2xl shadow-lg"
+                  />
                 </div>
               </div>
               <div className="bg-gradient-to-br from-blue-50 to-red-50 rounded-2xl p-8">
