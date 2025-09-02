@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 export const runtime = 'nodejs';
-import { supabaseAdmin } from '@/lib/supabaseAdmin';
+import { getSupabaseAdmin } from '@/lib/supabaseAdmin';
 
 type AsaasWebhook = {
   event: string;
@@ -37,6 +37,7 @@ export async function POST(request: NextRequest) {
     ]);
 
     if (successEvents.has(event)) {
+      const supabaseAdmin = getSupabaseAdmin();
       const { error } = await supabaseAdmin
         .from('users')
         .update({ plan: planSlug })

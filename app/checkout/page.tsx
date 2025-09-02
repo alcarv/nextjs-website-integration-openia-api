@@ -29,6 +29,20 @@ import {
   CardFooter,
 } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
+import {
+  formatCEP,
+  formatCPF,
+  formatCardNumber,
+  formatCVV,
+  formatExpiry,
+  formatPhoneBR,
+  formatUF,
+  luhnCheck,
+  onlyDigits,
+  validateCPF,
+  validateEmail,
+  validateExpiry,
+} from '@/lib/format';
 
 export default function CheckoutPage() {
   const { user } = useAuth();
@@ -58,6 +72,7 @@ export default function CheckoutPage() {
     expiry: '', // MM/YY
     cvv: '',
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [paymentResult, setPaymentResult] = useState<
     | null
     | { type: 'pix'; qrCodeImage?: string; qrCodePayload?: string; expirationDate?: string }
@@ -71,12 +86,73 @@ export default function CheckoutPage() {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    let v = value;
+    if (name === 'cpf') v = formatCPF(value);
+    if (name === 'phone') v = formatPhoneBR(value);
+    if (name === 'cep') v = formatCEP(value);
+    if (name === 'state') v = formatUF(value);
+    if (name === 'number') v = onlyDigits(value).slice(0, 8);
+    setFormData((prev) => ({ ...prev, [name]: v }));
+    setErrors((prev) => ({ ...prev, [name]: '' }));
+  };
+
+  const handleCardChange = (field: 'number' | 'holderName' | 'expiry' | 'cvv', value: string) => {
+    let v = value;
+    if (field === 'number') v = formatCardNumber(value);
+    if (field === 'expiry') v = formatExpiry(value);
+    if (field === 'cvv') v = formatCVV(value);
+    setCardData((p) => ({ ...p, [field]: v }));
+    setErrors((prev) => ({ ...prev, [field]: '' }));
+  };
+
+  const validateForm = (): Record<string, string> => {
+    const next: Record<string, string> = {};
+    // Personal info
+    if (!validateCPF(formData.cpf)) next.cpf = 'CPF inválido';
+    if (!formData.fullName.trim()) next.fullName = 'Informe seu nome completo';
+    if (!validateEmail(formData.email)) next.email = 'Email inválido';
+    if (formData.phone) {
+      const digits = onlyDigits(formData.phone);
+      if (digits.length < 10 || digits.length > 11) next.phone = 'Telefone inválido';
+    }
+
+    // Address required only for credit card
+    if (selectedPayment === 'credit') {
+      const cepDigits = onlyDigits(formData.cep);
+      if (cepDigits.length !== 8) next.cep = 'CEP inválido';
+      if (!formData.number) next.number = 'Número obrigatório';
+    }
+
+    // Card
+    if (selectedPayment === 'credit') {
+      const cardDigits = onlyDigits(cardData.number);
+      if (!luhnCheck(cardDigits)) next.numberCard = 'Número do cartão inválido';
+      if (!cardData.holderName.trim()) next.holderName = 'Nome no cartão obrigatório';
+      if (!validateExpiry(cardData.expiry)) next.expiry = 'Validade inválida';
+      const cvvDigits = onlyDigits(cardData.cvv);
+      if (cvvDigits.length < 3 || cvvDigits.length > 4) next.cvv = 'CVV inválido';
+    }
+
+    setErrors(next);
+    return next;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user || !selectedPlan) return;
+    const nextErrors = validateForm();
+    if (Object.keys(nextErrors).length > 0) {
+      // scroll to first error field (best effort)
+      const firstKey = Object.keys(nextErrors)[0];
+      const idMap: Record<string, string> = {
+        numberCard: 'cardNumber',
+        holderName: 'cardName',
+      };
+      const targetId = idMap[firstKey] || firstKey;
+      const el = document.getElementById(targetId);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
     setSubmitting(true);
     setPaymentResult(null);
     try {
@@ -227,7 +303,12 @@ export default function CheckoutPage() {
                         value={formData.cpf}
                         onChange={handleChange}
                         required
+                        maxLength={14}
+                        inputMode="numeric"
                       />
+                      {errors.cpf && (
+                        <p className="text-sm text-red-600 mt-1">{errors.cpf}</p>
+                      )}
                     </div>
                     <div className="md:col-span-2">
                       <Label htmlFor="fullName">Nome Completo</Label>
@@ -239,6 +320,9 @@ export default function CheckoutPage() {
                         onChange={handleChange}
                         required
                       />
+                      {errors.fullName && (
+                        <p className="text-sm text-red-600 mt-1">{errors.fullName}</p>
+                      )}
                     </div>
                     <div>
                       <Label htmlFor="email">Email</Label>
@@ -251,6 +335,9 @@ export default function CheckoutPage() {
                         onChange={handleChange}
                         required
                       />
+                      {errors.email && (
+                        <p className="text-sm text-red-600 mt-1">{errors.email}</p>
+                      )}
                     </div>
                     <div>
                       <Label htmlFor="phone">Número de Telefone</Label>
@@ -260,7 +347,12 @@ export default function CheckoutPage() {
                         placeholder="(00) 00000-0000"
                         value={formData.phone}
                         onChange={handleChange}
+                        maxLength={15}
+                        inputMode="numeric"
                       />
+                      {errors.phone && (
+                        <p className="text-sm text-red-600 mt-1">{errors.phone}</p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -278,7 +370,12 @@ export default function CheckoutPage() {
                         placeholder="00000-000"
                         value={formData.cep}
                         onChange={handleChange}
+                        maxLength={9}
+                        inputMode="numeric"
                       />
+                      {errors.cep && (
+                        <p className="text-sm text-red-600 mt-1">{errors.cep}</p>
+                      )}
                     </div>
                     <div className="md:col-span-2">
                       <Label htmlFor="street">Rua</Label>
@@ -298,7 +395,11 @@ export default function CheckoutPage() {
                         placeholder="123"
                         value={formData.number}
                         onChange={handleChange}
+                        inputMode="numeric"
                       />
+                      {errors.number && (
+                        <p className="text-sm text-red-600 mt-1">{errors.number}</p>
+                      )}
                     </div>
                     <div className="md:col-span-2">
                       <Label htmlFor="complement">Complemento</Label>
@@ -328,6 +429,7 @@ export default function CheckoutPage() {
                         placeholder="UF"
                         value={formData.state}
                         onChange={handleChange}
+                        maxLength={2}
                       />
                     </div>
                   </div>
@@ -421,8 +523,13 @@ export default function CheckoutPage() {
                           placeholder="0000 0000 0000 0000"
                           className="text-lg tracking-wider"
                           value={cardData.number}
-                          onChange={(e) => setCardData((p) => ({ ...p, number: e.target.value }))}
+                          onChange={(e) => handleCardChange('number', e.target.value)}
+                          maxLength={23}
+                          inputMode="numeric"
                         />
+                        {errors.numberCard && (
+                          <p className="text-sm text-red-600 mt-1">{errors.numberCard}</p>
+                        )}
                       </div>
                       <div>
                         <Label htmlFor="cardName">Nome no Cartão</Label>
@@ -430,8 +537,11 @@ export default function CheckoutPage() {
                           id="cardName"
                           placeholder="Nome como no cartão"
                           value={cardData.holderName}
-                          onChange={(e) => setCardData((p) => ({ ...p, holderName: e.target.value }))}
+                          onChange={(e) => handleCardChange('holderName', e.target.value)}
                         />
+                        {errors.holderName && (
+                          <p className="text-sm text-red-600 mt-1">{errors.holderName}</p>
+                        )}
                       </div>
                       <div className="grid grid-cols-2 gap-2">
                         <div>
@@ -440,8 +550,13 @@ export default function CheckoutPage() {
                             id="expiry"
                             placeholder="MM/AA"
                             value={cardData.expiry}
-                            onChange={(e) => setCardData((p) => ({ ...p, expiry: e.target.value }))}
+                            onChange={(e) => handleCardChange('expiry', e.target.value)}
+                            maxLength={5}
+                            inputMode="numeric"
                           />
+                          {errors.expiry && (
+                            <p className="text-sm text-red-600 mt-1">{errors.expiry}</p>
+                          )}
                         </div>
                         <div>
                           <Label htmlFor="cvv">CVV</Label>
@@ -450,8 +565,13 @@ export default function CheckoutPage() {
                             placeholder="123"
                             type="password"
                             value={cardData.cvv}
-                            onChange={(e) => setCardData((p) => ({ ...p, cvv: e.target.value }))}
+                            onChange={(e) => handleCardChange('cvv', e.target.value)}
+                            maxLength={4}
+                            inputMode="numeric"
                           />
+                          {errors.cvv && (
+                            <p className="text-sm text-red-600 mt-1">{errors.cvv}</p>
+                          )}
                         </div>
                       </div>
                     </div>
