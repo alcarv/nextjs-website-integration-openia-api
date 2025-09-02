@@ -1,6 +1,6 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'export',
+  // Use the default Node/SSR output so API routes and webhooks work
   eslint: {
     ignoreDuringBuilds: true,
   },

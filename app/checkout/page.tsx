@@ -51,6 +51,19 @@ export default function CheckoutPage() {
     state: '',
   });
   const [selectedPayment, setSelectedPayment] = useState('credit');
+  const [submitting, setSubmitting] = useState(false);
+  const [cardData, setCardData] = useState({
+    number: '',
+    holderName: '',
+    expiry: '', // MM/YY
+    cvv: '',
+  });
+  const [paymentResult, setPaymentResult] = useState<
+    | null
+    | { type: 'pix'; qrCodeImage?: string; qrCodePayload?: string; expirationDate?: string }
+    | { type: 'boleto'; bankSlipUrl?: string; identificationField?: string; invoiceUrl?: string; dueDate?: string }
+    | { type: 'credit'; status?: string; invoiceUrl?: string }
+  >(null);
 
   useEffect(() => {
     setShowAuthModal(!user);
@@ -61,9 +74,74 @@ export default function CheckoutPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formData);
+    if (!user || !selectedPlan) return;
+    setSubmitting(true);
+    setPaymentResult(null);
+    try {
+      const res = await fetch('/api/checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${user.id}`,
+        },
+        body: JSON.stringify({
+          planSlug: selectedPlan.slug,
+          paymentMethod: selectedPayment,
+          customer: {
+            cpf: formData.cpf,
+            fullName: formData.fullName || user.name,
+            email: formData.email || user.email,
+            phone: formData.phone,
+          },
+          ...(selectedPayment === 'credit'
+            ? {
+                card: {
+                  holderName: cardData.holderName,
+                  number: cardData.number,
+                  expiryMonth: cardData.expiry.split('/')[0] || '',
+                  expiryYear: cardData.expiry.split('/')[1] || '',
+                  ccv: cardData.cvv,
+                },
+                address: {
+                  postalCode: formData.cep,
+                  addressNumber: formData.number,
+                  addressComplement: formData.complement,
+                },
+              }
+            : {}),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data?.error || 'Falha ao iniciar o pagamento');
+      }
+      if (data?.type === 'pix') {
+        const url = `/checkout/success?type=pix&paymentId=${encodeURIComponent(data.paymentId)}`;
+        router.push(url);
+      } else if (data?.type === 'boleto') {
+        const params = new URLSearchParams({
+          type: 'boleto',
+          paymentId: String(data.paymentId || ''),
+        });
+        if (data.invoiceUrl) params.set('invoiceUrl', data.invoiceUrl);
+        router.push(`/checkout/success?${params.toString()}`);
+      } else if (data?.type === 'credit') {
+        if (data.status === 'CONFIRMED' || data.status === 'RECEIVED') {
+          router.push('/checkout/success');
+        } else {
+          setPaymentResult({ type: 'credit', status: data.status, invoiceUrl: data.invoiceUrl });
+        }
+      } else {
+        throw new Error('Resposta inesperada do checkout');
+      }
+    } catch (err) {
+      console.error(err);
+      alert('Não foi possível iniciar o checkout. Tente novamente.');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const paymentMethods = [
@@ -342,6 +420,8 @@ export default function CheckoutPage() {
                           id="cardNumber"
                           placeholder="0000 0000 0000 0000"
                           className="text-lg tracking-wider"
+                          value={cardData.number}
+                          onChange={(e) => setCardData((p) => ({ ...p, number: e.target.value }))}
                         />
                       </div>
                       <div>
@@ -349,6 +429,8 @@ export default function CheckoutPage() {
                         <Input
                           id="cardName"
                           placeholder="Nome como no cartão"
+                          value={cardData.holderName}
+                          onChange={(e) => setCardData((p) => ({ ...p, holderName: e.target.value }))}
                         />
                       </div>
                       <div className="grid grid-cols-2 gap-2">
@@ -357,6 +439,8 @@ export default function CheckoutPage() {
                           <Input
                             id="expiry"
                             placeholder="MM/AA"
+                            value={cardData.expiry}
+                            onChange={(e) => setCardData((p) => ({ ...p, expiry: e.target.value }))}
                           />
                         </div>
                         <div>
@@ -365,6 +449,8 @@ export default function CheckoutPage() {
                             id="cvv"
                             placeholder="123"
                             type="password"
+                            value={cardData.cvv}
+                            onChange={(e) => setCardData((p) => ({ ...p, cvv: e.target.value }))}
                           />
                         </div>
                       </div>
@@ -477,16 +563,81 @@ export default function CheckoutPage() {
                   
                 <Button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-blue-600 to-red-600 hover:from-blue-700 hover:to-red-700 text-white py-3 text-lg font-semibold"
+                  disabled={submitting}
+                  className="w-full bg-gradient-to-r from-blue-600 to-red-600 hover:from-blue-700 hover:to-red-700 text-white py-3 text-lg font-semibold disabled:opacity-70"
                 >
-                  {selectedPayment === 'credit' && 'Finalizar Pagamento'}
-                  {selectedPayment === 'pix' && 'Gerar QR Code PIX'}
-                  {selectedPayment === 'boleto' && 'Gerar Boleto'}
+                  {submitting
+                    ? 'Processando...'
+                    : selectedPayment === 'credit'
+                      ? 'Finalizar Pagamento'
+                      : selectedPayment === 'pix'
+                        ? 'Gerar QR Code PIX'
+                        : 'Gerar Boleto'}
                 </Button>
                 </div>
               </CardFooter>
             </form>
           </Card>
+
+          {/* Result blocks for PIX and Boleto (stay on site) */}
+          {paymentResult?.type === 'pix' && (
+            <div className="mt-6 p-6 bg-white rounded-lg border">
+              <h3 className="text-lg font-semibold mb-4">Pague com PIX</h3>
+              {paymentResult.qrCodeImage ? (
+                <img
+                  src={`data:image/png;base64,${paymentResult.qrCodeImage}`}
+                  alt="QR Code PIX"
+                  className="mx-auto w-64 h-64 object-contain"
+                />
+              ) : null}
+              {paymentResult.qrCodePayload && (
+                <div className="mt-4">
+                  <Label>Código copia e cola</Label>
+                  <Input readOnly value={paymentResult.qrCodePayload} />
+                </div>
+              )}
+              {paymentResult.expirationDate && (
+                <p className="text-sm text-gray-600 mt-2">Válido até: {new Date(paymentResult.expirationDate).toLocaleString('pt-BR')}</p>
+              )}
+            </div>
+          )}
+
+          {paymentResult?.type === 'boleto' && (
+            <div className="mt-6 p-6 bg-white rounded-lg border">
+              <h3 className="text-lg font-semibold mb-4">Boleto gerado</h3>
+              {paymentResult.bankSlipUrl || paymentResult.invoiceUrl ? (
+                <a
+                  href={paymentResult.bankSlipUrl || paymentResult.invoiceUrl}
+                  target="_blank"
+                  className="text-blue-600 underline"
+                  rel="noreferrer"
+                >
+                  Visualizar/baixar boleto
+                </a>
+              ) : null}
+              {paymentResult.identificationField && (
+                <div className="mt-4">
+                  <Label>Linha digitável</Label>
+                  <Input readOnly value={paymentResult.identificationField} />
+                </div>
+              )}
+              {paymentResult.dueDate && (
+                <p className="text-sm text-gray-600 mt-2">Vencimento: {paymentResult.dueDate}</p>
+              )}
+            </div>
+          )}
+
+          {paymentResult?.type === 'credit' && paymentResult.status && (
+            <div className="mt-6 p-6 bg-white rounded-lg border">
+              <h3 className="text-lg font-semibold mb-2">Status do pagamento</h3>
+              <p className="text-gray-700">{paymentResult.status}</p>
+              {paymentResult.invoiceUrl && (
+                <a href={paymentResult.invoiceUrl} target="_blank" rel="noreferrer" className="text-blue-600 underline mt-2 inline-block">
+                  Ver comprovante
+                </a>
+              )}
+            </div>
+          )}
 
         </div>
       ) : null}
