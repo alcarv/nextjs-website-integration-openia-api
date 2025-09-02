@@ -197,6 +197,7 @@ export default function SobrePage() {
             </div>
 
             <div className="relative">
+              <div className="mb-8">
                 <Image
                   src="https://images.pexels.com/photos/4427430/pexels-photo-4427430.jpeg?auto=compress&cs=tinysrgb&w=800"
                   alt="Dra. Ruth Monielly"
