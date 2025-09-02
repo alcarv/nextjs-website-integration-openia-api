@@ -12,22 +12,32 @@ type AsaasWebhook = {
 
 export async function POST(request: NextRequest) {
   try {
-    const payload = (await request.json()) as AsaasWebhook;
-    const event = payload.event;
-    const payment = payload.payment || payload.data || {};
+    // Parse JSON robustly in case of unexpected content-type
+    let payload: AsaasWebhook;
+    try {
+      payload = (await request.json()) as AsaasWebhook;
+    } catch (_) {
+      const text = await request.text();
+      payload = JSON.parse(text) as AsaasWebhook;
+    }
+    const event = payload?.event;
+    const payment = (payload?.payment || payload?.data || {}) as any;
 
     const ref: string | undefined = payment.externalReference || payment?.payment?.externalReference;
     if (!ref) {
-      return NextResponse.json({ ok: true, skipped: 'no-external-reference' });
+      return NextResponse.json({ error: 'no-external-reference' }, { status: 400 });
     }
 
-    if(request.headers.get('asaas-access-token') !== process.env.ASAAS_WEBHOOK_TOKEN) {
-      return NextResponse.json({ ok: true, skipped: 'invalid-webhook-token' });
+    const webhookHeader =
+      request.headers.get('asaas-access-token') ||
+      request.headers.get('Asaas-Access-Token');
+    if (webhookHeader !== process.env.ASAAS_WEBHOOK_TOKEN) {
+      return NextResponse.json({ error: 'invalid-webhook-token' }, { status: 400 });
     }
 
     const [userId, planSlug] = String(ref).split('|');
     if (!userId || !planSlug) {
-      return NextResponse.json({ ok: true, skipped: 'invalid-external-reference' });
+      return NextResponse.json({ error: 'invalid-external-reference' }, { status: 400 });
     }
 
     const successEvents = new Set([
@@ -37,14 +47,19 @@ export async function POST(request: NextRequest) {
     ]);
 
     if (successEvents.has(event)) {
-      const supabaseAdmin = getSupabaseAdmin();
-      const { error } = await supabaseAdmin
-        .from('users')
-        .update({ plan: planSlug })
-        .eq('id', userId);
-      if (error) {
-        console.error('Erro ao atualizar plano do usuário:', error);
-        return NextResponse.json({ error: 'db-error' }, { status: 500 });
+      try {
+        const supabaseAdmin = getSupabaseAdmin();
+        const { error } = await supabaseAdmin
+          .from('users')
+          .update({ plan: planSlug })
+          .eq('id', userId);
+        if (error) {
+          console.error('Erro ao atualizar plano do usuário:', error);
+          return NextResponse.json({ error: 'db-error' }, { status: 500 });
+        }
+      } catch (e) {
+        console.error('Supabase admin not configured or failed:', e);
+        return NextResponse.json({ error: 'supabase-not-configured' }, { status: 400 });
       }
     }
 
