@@ -15,10 +15,10 @@ import {
   Lock,
   Star,
   Zap,
-  Infinity as InfinityIcon,
   Shield,
   ArrowRight,
   PenTool,
+  Loader2,
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
@@ -859,6 +859,20 @@ export default function HumanizeText() {
         </div>
       </div>
       
+      {isLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+          <div className="bg-white rounded-xl shadow-2xl p-6 max-w-md w-[90%] text-center border border-gray-100">
+            <div className="flex items-center justify-center mb-3">
+              <Loader2 className="h-6 w-6 text-blue-600 animate-spin" />
+            </div>
+            <p className="text-gray-900 font-medium">Processando seu texto…</p>
+            <p className="text-gray-600 text-sm mt-1">
+              Isso pode levar alguns segundos. Aguarde enquanto nossos agents estão processando seu texto
+            </p>
+          </div>
+        </div>
+      )}
+
       <AuthModal isOpen={showAuthModal} onClose={() => setShowAuthModal(false)} />
     </div>
   );
