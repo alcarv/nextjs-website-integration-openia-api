@@ -27,10 +27,14 @@ import { Progress } from '@/components/ui/progress';
 import { usePlans } from '@/hooks/usePlans';
 
 export default function HumanizeText() {
+  const MIN_CHARS = 350;
+  const MAX_CHARS = 3000;
   const [inputText, setInputText] = useState('');
   const [outputText, setOutputText] = useState('');
   const [outputVersions, setOutputVersions] = useState<string[]>([]);
   const [selectedVersions, setSelectedVersions] = useState(1);
+  const [selectedTipo, setSelectedTipo] = useState<string>('');
+  const [selectedModelo, setSelectedModelo] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
@@ -41,6 +45,40 @@ export default function HumanizeText() {
   const [billingInterval, setBillingInterval] = useState<'monthly' | 'annual'>('monthly');
   const currentPlan = plans.find((p) => p.slug === user?.plan);
   const freePlan = plans.find((p) => p.slug === 'free');
+  
+  const tiposConfig: Record<string, { label: string; modelos: { value: string; label: string }[] }> = {
+    HUMANIZADORES: {
+      label: 'Humanizadores',
+      modelos: [
+        { value: 'analitico_reflexivo', label: 'Humanizador Estilo Analítico-Reflexivo' },
+        { value: 'expositivo_descritivo', label: 'Humanizador - Estilo Expositivo-Descritivo' },
+        { value: 'tecnico_expositivo', label: 'Humanizador - Estilo Técnico-Expositivo' },
+        { value: 'narrativo_interpretativo', label: 'Humanizador Com Estilo Narrativo-Interpretativo' },
+        { value: 'multiversoes', label: 'Humanização Multiversões' },
+      ],
+    },
+    PARAFRASEADORES: {
+      label: 'Paráfraseadores',
+      modelos: [
+        { value: 'autoral_ruth', label: 'PARAFRASEADOR ESTILO AUTORAL – DRA. RUTH MONIELLY' },
+        { value: 'juridicas_politicas', label: 'Parafraseador Para Área De Ciências Jurídicas E Políticas- Estilo Autoral Da Dra. Ruth Moniélly' },
+        { value: 'saude', label: 'Parafraseador Área da Saúde – Estilo Dra. Ruth Monielly' },
+        { value: 'educacao', label: 'Parafraseador área da Educação – Estilo autoral- Dra. Ruth Monielly' },
+        { value: 'psicologia_psicanalise', label: 'Parafrase Area Da Psicologia E Psicanalíse- Estilo Dra. Ruth Moniélly' },
+        { value: 'gestao_negocios', label: 'Parafraseador para escrita em Ciências Sociais Aplicadas – Gestão e Negócios- estilo autoral Dra. Ruth Moniélly' },
+        { value: 'artes_comunicacao_cultura', label: 'Parafraseador Para Escrita Em Artes, Comunicação E Cultura' },
+        { value: 'agrarias_ambientais', label: 'Parafraseador  Áreas De Ciências Agrárias E Ambientais' },
+        { value: 'exatas_engenharias_tecnologias', label: 'Parafraseador Para Áreas De Ciências Exatas, Engenharias E Tecnologias' },
+      ],
+    },
+    COMPLEMENTADOR: {
+      label: 'Complementador / Aprimorador',
+      modelos: [
+        { value: 'argumentativo_reflexivo_critico_autoral', label: 'COMPLEMENTAR TEXTOS NO ESTILO ARGUMENTATIVO/REFLEXIVO E CRÍTICO – autoral de Dra. Ruth Moniélly' },
+        { value: 'analitico_critico', label: 'Aprimorador - Estilo Analítico-Crítico' },
+      ],
+    },
+  };
   
   const canUseService = () => {
     if (!user || !currentPlan) return false;
@@ -78,6 +116,32 @@ export default function HumanizeText() {
       return;
     }
 
+    if (inputText.length < MIN_CHARS) {
+      toast({
+        title: 'Texto muito curto',
+        description: `Insira ao menos ${MIN_CHARS} caracteres.`,
+        variant: 'destructive',
+      });
+      return;
+    }
+    if (inputText.length > MAX_CHARS) {
+      toast({
+        title: 'Texto muito longo',
+        description: `Limite máximo de ${MAX_CHARS} caracteres.`,
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    if (!selectedTipo || !selectedModelo) {
+      toast({
+        title: 'Selecione o tipo e o modelo',
+        description: 'Antes de prosseguir, escolha o Tipo e o Modelo desejados.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     if (exceedsLimits()) {
       toast({
         title: user?.plan === 'free' ? 'Limite de palavras' : 'Limite de caracteres',
@@ -107,7 +171,12 @@ export default function HumanizeText() {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${user.id}`,
         },
-        body: JSON.stringify({ text: inputText }),
+        body: JSON.stringify({ 
+          text: inputText,
+          versions: selectedVersions,
+          tipo: selectedTipo,
+          modelo: selectedModelo,
+        }),
       });
 
       if (!response.ok) {
@@ -174,6 +243,8 @@ export default function HumanizeText() {
     return 0;
   })();
   const charCount = getCharCount(inputText);
+  const charTooShort = charCount > 0 && charCount < MIN_CHARS;
+  const charTooLong = charCount > MAX_CHARS;
   const wordCount = getWordCount(inputText);
   const isOver = exceedsLimits();
 
@@ -286,16 +357,59 @@ export default function HumanizeText() {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              {/* Tipo e Modelo */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-gray-700">Tipo</label>
+                  <select
+                    value={selectedTipo}
+                    onChange={(e) => {
+                      setSelectedTipo(e.target.value);
+                      setSelectedModelo('');
+                    }}
+                    className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
+                  >
+                    <option value="" disabled>Selecione um tipo...</option>
+                    {Object.keys(tiposConfig).map((key) => (
+                      <option key={key} value={key}>{tiposConfig[key].label}</option>
+                    ))}
+                  </select>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-gray-700">Modelo</label>
+                  <select
+                    value={selectedModelo}
+                    onChange={(e) => setSelectedModelo(e.target.value)}
+                    disabled={!selectedTipo}
+                    className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white disabled:bg-gray-100 disabled:text-gray-400"
+                  >
+                    <option value="" disabled>{selectedTipo ? 'Selecione um modelo...' : 'Selecione um tipo antes'}</option>
+                    {selectedTipo && tiposConfig[selectedTipo]?.modelos.map((m) => (
+                      <option key={m.value} value={m.value}>{m.label}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
               <Textarea
                 placeholder="Cole seu texto gerado por IA aqui..."
                 value={inputText}
-                onChange={(e) => setInputText(e.target.value)}
-                className={`min-h-[300px] resize-none ${isOver ? 'border-red-500' : ''}`}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  setInputText(v.length > MAX_CHARS ? v.slice(0, MAX_CHARS) : v);
+                }}
+                disabled={!selectedTipo || !selectedModelo}
+                maxLength={MAX_CHARS}
+                className={`min-h-[300px] resize-none ${isOver || charTooShort || charTooLong ? 'border-red-500' : ''} ${!selectedTipo || !selectedModelo ? 'bg-gray-100 cursor-not-allowed' : ''}`}
               />
+              {!selectedTipo || !selectedModelo ? (
+                <p className="text-sm text-amber-600 mt-2">
+                  Para começar, selecione o Tipo e o Modelo acima.
+                </p>
+              ) : null}
               <div className="flex justify-between items-center mt-4">
-                <span className={`text-sm ${isOver ? 'text-red-500' : 'text-gray-500'}`}>
-                  {user?.plan === 'free' ? `${wordCount} palavras (${charCount} caracteres)` : `${charCount} caracteres`}
-                </span>
+                <span className={`text-sm ${isOver || charTooShort || charTooLong ? 'text-red-500' : 'text-gray-500'}`}>
+                  {user?.plan === 'free' ? `${wordCount} palavras (${charCount}/${MAX_CHARS} caracteres)` : `${charCount}/${MAX_CHARS} caracteres`} · mínimo {MIN_CHARS}
+                  </span>
                 {!user ? (
                   <Button 
                     onClick={() => setShowAuthModal(true)}
@@ -306,6 +420,9 @@ export default function HumanizeText() {
                   </Button>
                 ) : (
                   <div className="space-y-4">
+                    {charTooShort && (
+                      <p className="text-sm text-red-600">O texto precisa ter pelo menos {MIN_CHARS} caracteres.</p>
+                    )}
                     <div className="flex items-center space-x-4">
                       <label className="text-sm font-medium text-gray-700">
                         Versões:
@@ -322,7 +439,7 @@ export default function HumanizeText() {
                     </div>
                     <Button 
                       onClick={handleHumanize}
-                      disabled={Boolean(isLoading || !inputText.trim() || !canUseService() || isOver)}
+                      disabled={Boolean(isLoading || !selectedTipo || !selectedModelo || !inputText.trim() || charTooShort || charTooLong || !canUseService() || isOver)}
                       className="bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 w-full"
                     >
                       {isLoading ? 'Humanizando...' : `Gerar ${selectedVersions} ${selectedVersions === 1 ? 'Versão' : 'Versões'}`}

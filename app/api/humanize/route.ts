@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 import { supabase } from '@/lib/supabase';
+import { resolveSystemPrompt } from '@/lib/resolvePrompt';
 
 const openai = new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
@@ -8,7 +9,7 @@ const openai = new OpenAI({
 
 export async function POST(request: NextRequest) {
   try {
-    const { text, versions = 1 } = await request.json();
+    const { text, versions = 1, tipo, modelo } = await request.json();
     const userId = request.headers.get('Authorization')?.replace('Bearer ', '');
 
     if (!userId) {
@@ -21,6 +22,58 @@ export async function POST(request: NextRequest) {
     if (!text) {
       return NextResponse.json(
         { error: 'Texto não fornecido' },
+        { status: 400 }
+      );
+    }
+    // Per-text character range validation
+    const textLen = text.length;
+    if (textLen < 350) {
+      return NextResponse.json(
+        { error: 'O texto precisa ter pelo menos 350 caracteres.' },
+        { status: 400 }
+      );
+    }
+    if (textLen > 3000) {
+      return NextResponse.json(
+        { error: 'O texto pode ter no máximo 3000 caracteres.' },
+        { status: 400 }
+      );
+    }
+
+    // Validate tipo/modelo selections
+    const tipos: Record<string, { modelos: string[] }> = {
+      HUMANIZADORES: { modelos: [
+        'analitico_reflexivo',
+        'expositivo_descritivo',
+        'tecnico_expositivo',
+        'narrativo_interpretativo',
+        'multiversoes',
+      ] },
+      PARAFRASEADORES: { modelos: [
+        'autoral_ruth',
+        'juridicas_politicas',
+        'saude',
+        'educacao',
+        'psicologia_psicanalise',
+        'gestao_negocios',
+        'artes_comunicacao_cultura',
+        'agrarias_ambientais',
+        'exatas_engenharias_tecnologias',
+      ] },
+      COMPLEMENTADOR: { modelos: [
+        'argumentativo_reflexivo_critico_autoral',
+        'analitico_critico',
+      ] },
+    };
+    if (!tipo || !modelo) {
+      return NextResponse.json(
+        { error: 'Tipo e modelo são obrigatórios' },
+        { status: 400 }
+      );
+    }
+    if (!tipos[tipo] || !tipos[tipo].modelos.includes(modelo)) {
+      return NextResponse.json(
+        { error: 'Tipo ou modelo inválido' },
         { status: 400 }
       );
     }
@@ -96,41 +149,58 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Generate multiple versions if requested
     const humanizedVersions: string[] = [];
-    
-    for (let i = 0; i < versions; i++) {
-      const completion = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
-      messages: [
-        {
-          role: "system",
-          content: `Você é um especialista em humanização de textos gerados por IA. Sua tarefa é transformar textos que soam artificiais em textos naturais, humanos e autênticos, mantendo o significado original.
+    const { system: resolvedSystem, promptId } = resolveSystemPrompt(tipo, modelo);
+    const responsesModel = process.env.OPENAI_RESPONSES_MODEL || 'gpt-5';
+    const chatModel = process.env.OPENAI_CHAT_MODEL || 'gpt-4o-mini';
+    const isPromptIdUsable = Boolean(promptId && !String(promptId).startsWith('prompt_id_replace_me'));
 
-Regras importantes:
-1. Mantenha o significado e a informação original
-2. Use linguagem natural e variada
-3. Adicione nuances humanas sutis
-4. Varie a estrutura das frases
-5. Use contrações quando apropriado
-6. Adicione elementos conversacionais naturais
-7. Mantenha o tom profissional quando necessário
-8. Responda APENAS com o texto humanizado, sem explicações adicionais
-9. O texto deve soar como se fosse escrito por um brasileiro nativo
-10. ${versions > 1 ? `Esta é a versão ${i + 1} de ${versions}. Crie uma variação única e diferente das outras versões, mas mantendo o mesmo significado.` : ''}`
-        },
-        {
-          role: "user",
-          content: `Por favor, humanize este texto mantendo seu significado original:\n\n${text}`
+    const extractFromResponses = (res: any): string | null => {
+      try {
+        if (!res) return null;
+        if (typeof (res as any).output_text === 'string' && (res as any).output_text.trim().length > 0) {
+          return (res as any).output_text.trim();
         }
-      ],
-      temperature: versions > 1 ? 0.8 + (i * 0.1) : 0.7,
-      max_tokens: 2000,
-    });
+        const content = (res as any).output?.[0]?.content?.[0]?.text?.value
+          ?? (res as any).content?.[0]?.text?.value;
+        if (typeof content === 'string' && content.trim().length > 0) return content.trim();
+        const choice = (res as any).choices?.[0]?.message?.content;
+        if (typeof choice === 'string' && choice.trim().length > 0) return choice.trim();
+      } catch {}
+      return null;
+    };
 
-      const humanizedText = completion.choices[0]?.message?.content;
-      if (humanizedText) {
-        humanizedVersions.push(humanizedText);
+    for (let i = 0; i < versions; i++) {
+      if (isPromptIdUsable) {
+        console.log('Entrou aqui isPromptIdUsable');
+        const run = await (openai as any).responses.create({
+          model: responsesModel,
+          prompt: {
+            id: promptId
+          },
+          input: text,
+        });
+        const out = extractFromResponses(run);
+        if (out) humanizedVersions.push(out);
+      } else {
+        console.log('Entrou aqui sem promptId');
+        const completion = await openai.chat.completions.create({
+          model: chatModel,
+          messages: [
+            {
+              role: "system",
+              content: `Você é um especialista brasileiro em linguagem e reescrita de textos. Siga as instruções conforme o modo selecionado pelo usuário.\n\n${resolvedSystem}\n\nRegras gerais:\n0. Preserve o significado e informações originais (nunca invente fatos)\n1. Mantenha coesão e naturalidade\n2. Varie estruturas e vocabulário quando apropriado\n3. Adapte o registro ao público-alvo do modo escolhido\n4. Evite marcas de IA e respostas metalinguísticas\n5. Saída apenas com o texto final (sem explicações)\n\n${versions > 1 ? `6. Esta é a versão ${i + 1} de ${versions}. Produza uma variação única mantendo o mesmo significado.` : ''}`
+            },
+            {
+              role: "user",
+              content: `${tipo === 'PARAFRASEADORES' ? 'Parafraseie o texto a seguir conforme as diretrizes.' : tipo === 'COMPLEMENTADOR' ? 'Aprimore o texto a seguir conforme as diretrizes.' : 'Humanize o texto a seguir conforme as diretrizes.'}\n\n${text}`
+            }
+          ],
+          temperature: versions > 1 ? 0.8 + (i * 0.1) : 0.7,
+          max_tokens: 2000,
+        });
+        const humanizedText = completion.choices[0]?.message?.content;
+        if (humanizedText) humanizedVersions.push(humanizedText);
       }
     }
 
