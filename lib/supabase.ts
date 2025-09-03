@@ -13,6 +13,7 @@ export type User = {
   usage_count: number;
   characters_used: number;
   usage_reset_date: string;
+  plan_expires_at?: string | null;
   created_at: string;
 };
 
@@ -27,7 +28,9 @@ export type Plan = {
   id: string;
   slug: string;
   name: string;
-  price: number;
+  price: number; // legacy monthly price
+  price_monthly?: number | null;
+  price_annual?: number | null;
   humanizations_per_month: number | null;
   word_limit: number | null;
   character_quota: number | null;

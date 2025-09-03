@@ -38,6 +38,7 @@ export default function HumanizeText() {
   const { user, refreshUser } = useAuth();
   const router = useRouter();
   const { plans } = usePlans();
+  const [billingInterval, setBillingInterval] = useState<'monthly' | 'annual'>('monthly');
   const currentPlan = plans.find((p) => p.slug === user?.plan);
   const freePlan = plans.find((p) => p.slug === 'free');
   
@@ -64,7 +65,8 @@ export default function HumanizeText() {
   const handleUpgrade = (planSlug?: string) => {
     if (user) {
       const slug = planSlug || 'intermediate';
-      router.push(`/checkout?plan=${slug}`);
+      const interval = billingInterval;
+      router.push(`/checkout?plan=${slug}&interval=${interval}`);
     } else {
       setShowAuthModal(true);
     }
@@ -611,11 +613,29 @@ export default function HumanizeText() {
               Planos flexíveis para atender suas necessidades de humanização de textos
             </p>
           </div>
+          {/* Billing interval toggle */}
+          <div className="flex items-center justify-center gap-2 mb-6">
+            <button
+              type="button"
+              onClick={() => setBillingInterval('monthly')}
+              className={`px-4 py-2 rounded-full border text-sm ${billingInterval === 'monthly' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300'}`}
+            >
+              Mensal
+            </button>
+            <button
+              type="button"
+              onClick={() => setBillingInterval('annual')}
+              className={`px-4 py-2 rounded-full border text-sm ${billingInterval === 'annual' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300'}`}
+            >
+              Anual
+            </button>
+          </div>
+
           <div className="grid md:grid-cols-4 gap-8 max-w-6xl mx-auto px-8">
             {plans
               .slice()
               .filter((p) => p.slug !== 'free')
-              .sort((a, b) => (a.price ?? 0) - (b.price ?? 0))
+              .sort((a, b) => (((a as any).price_monthly ?? a.price ?? 0) - (((b as any).price_monthly ?? b.price ?? 0))) )
               .map((plan) => {
                 const isPopular = plan.slug === 'advanced';
                 return (
@@ -633,8 +653,28 @@ export default function HumanizeText() {
                       </div>
                       <CardTitle className="text-2xl font-bold text-gray-900">{plan.name}</CardTitle>
                       <div className="mt-4">
-                        <span className="text-4xl font-bold text-gray-900">R$ {plan.price}</span>
-                        <span className="text-gray-500">/mês</span>
+                        {(() => {
+                          const monthly = (plan as any).price_monthly ?? plan.price;
+                          const annual = (plan as any).price_annual ?? (monthly * 12);
+                          const value = billingInterval === 'annual' ? annual : monthly;
+                          const suffix = billingInterval === 'annual' ? '/ano' : '/mês';
+                          const fullYear = Number(monthly) * 12;
+                          const savings = Math.max(0, fullYear - Number(annual));
+                          const savingsPct = fullYear > 0 ? Math.round((savings / fullYear) * 100) : 0;
+                          return (
+                            <div className="flex flex-col items-center gap-1">
+                              <div>
+                                <span className="text-4xl font-bold text-gray-900">R$ {Number(value).toFixed(2)}</span>
+                                <span className="text-gray-500">{suffix}</span>
+                              </div>
+                              {billingInterval === 'annual' && savings > 0 && (
+                                <div className="text-xs text-green-700 bg-green-100 px-2 py-1 rounded-full">
+                                  Economize R$ {savings.toFixed(2)} ({savingsPct}%)
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()}
                       </div>
                     </CardHeader>
                     <CardContent className="pt-0">

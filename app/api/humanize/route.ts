@@ -39,6 +39,19 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // If plan expired, revert to free before enforcing limits
+    if (user.plan !== 'free' && user.plan_expires_at) {
+      const now = new Date();
+      const exp = new Date(user.plan_expires_at);
+      if (now >= exp) {
+        await supabase
+          .from('users')
+          .update({ plan: 'free', plan_expires_at: null })
+          .eq('id', userId);
+        user.plan = 'free';
+      }
+    }
+
     // Enforce free plan limits (requests + words per text)
     if (user.plan === 'free') {
       // hard cap: 3 uses and 200 words per text

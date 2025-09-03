@@ -21,6 +21,9 @@ import {
   TrendingUp
 } from 'lucide-react';
 import Footer from '@/components/Footer';
+import imgHero from '@/public/IMG_1199.JPG';
+import imgLeft from '@/public/IMG_1267.JPG';
+import imgRight from '@/public/IMG_1269.JPG';
 
 const achievements = [
   {
@@ -198,36 +201,30 @@ export default function SobrePage() {
 
             <div>
               <div className="grid grid-cols-2 gap-4 mb-8">
-                <div className="relative col-span-2">
+                <div className="relative col-span-2 overflow-hidden rounded-2xl">
                   <Image
-                    src="https://images.pexels.com/photos/4427430/pexels-photo-4427430.jpeg?auto=compress&cs=tinysrgb&w=1200"
+                    src={imgHero}
                     alt="Dra. Ruth Monielly"
-                    width={1200}
-                    height={384}
-                    className="w-full h-64 md:h-80 object-cover rounded-2xl shadow-lg"
+                    className="w-full h-auto shadow-lg"
                     priority
                   />
                   <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-lg shadow">
-                    <p className="text-sm font-medium text-gray-900">Escritório Dra. Ruth Monielly</p>
-                    <p className="text-xs text-gray-600">São Paulo, SP</p>
+                    <p className="text-sm font-medium text-gray-900">Dra. Ruth Monielly</p>
+                    <p className="text-xs text-gray-600">Brasil</p>
                   </div>
                 </div>
-                <div>
+                <div className="overflow-hidden rounded-2xl">
                   <Image
-                    src="https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=800"
+                    src={imgLeft}
                     alt="Atendimento profissional"
-                    width={800}
-                    height={320}
-                    className="w-full h-40 md:h-48 object-cover rounded-2xl shadow-lg"
+                    className="w-full h-auto shadow-lg"
                   />
                 </div>
-                <div>
+                <div className="overflow-hidden rounded-2xl">
                   <Image
-                    src="https://images.pexels.com/photos/3182763/pexels-photo-3182763.jpeg?auto=compress&cs=tinysrgb&w=800"
+                    src={imgRight}
                     alt="Trabalho em equipe"
-                    width={800}
-                    height={320}
-                    className="w-full h-40 md:h-48 object-cover rounded-2xl shadow-lg"
+                    className="w-full h-auto shadow-lg"
                   />
                 </div>
               </div>

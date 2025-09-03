@@ -17,12 +17,14 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const {
       planSlug,
+      billingInterval,
       paymentMethod,
       customer: customerPayload,
       card,
       address,
     }: {
       planSlug: string;
+      billingInterval?: 'monthly' | 'annual';
       paymentMethod: 'credit' | 'pix' | 'boleto';
       customer: {
         cpf?: string;
@@ -82,8 +84,10 @@ export async function POST(request: NextRequest) {
       mobilePhone,
     });
 
-    // Compute price, apply PIX discount if chosen on UI
-    const baseValue = Number(plan.price || 0);
+    // Compute price by billing interval, apply PIX discount if chosen on UI
+    const monthly = (plan as any).price_monthly ?? plan.price ?? 0;
+    const annual = (plan as any).price_annual ?? (monthly * 12);
+    const baseValue = Number((billingInterval === 'annual' ? annual : monthly) || 0);
     const value = paymentMethod === 'pix' ? Number((baseValue * 0.95).toFixed(2)) : baseValue;
 
     // Direct integration (no redirect): create the appropriate payment and return data
@@ -92,8 +96,8 @@ export async function POST(request: NextRequest) {
         customer: customer.id,
         billingType: 'PIX',
         value,
-        description: `Assinatura do plano ${plan.name}`,
-        externalReference: `${userId}|${planSlug}`,
+        description: `Assinatura ${billingInterval === 'annual' ? 'anual' : 'mensal'} do plano ${plan.name}`,
+        externalReference: `${userId}|${planSlug}|${billingInterval || 'monthly'}`,
         dueDate: format(new Date(), 'yyyy-MM-dd')
       });
       const qr = await getPixQrCode(payment.id);
@@ -119,8 +123,8 @@ export async function POST(request: NextRequest) {
         customer: customer.id,
         billingType: 'BOLETO',
         value,
-        description: `Assinatura do plano ${plan.name}`,
-        externalReference: `${userId}|${planSlug}`,
+        description: `Assinatura ${billingInterval === 'annual' ? 'anual' : 'mensal'} do plano ${plan.name}`,
+        externalReference: `${userId}|${planSlug}|${billingInterval || 'monthly'}`,
         dueDate: format(addDays(new Date(), 3), 'yyyy-MM-dd')
       });
 
@@ -149,8 +153,8 @@ export async function POST(request: NextRequest) {
       const payment = await createCreditCardPayment({
         customer: customer.id,
         value,
-        description: `Assinatura do plano ${plan.name}`,
-        externalReference: `${userId}|${planSlug}`,
+        description: `Assinatura ${billingInterval === 'annual' ? 'anual' : 'mensal'} do plano ${plan.name}`,
+        externalReference: `${userId}|${planSlug}|${billingInterval || 'monthly'}`,
         dueDate: format(new Date(), 'yyyy-MM-dd'),
         creditCard: {
           holderName: card.holderName,

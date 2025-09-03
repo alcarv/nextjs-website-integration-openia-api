@@ -35,10 +35,11 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'invalid-webhook-token' }, { status: 400 });
     }
 
-    const [userId, planSlug] = String(ref).split('|');
+    const [userId, planSlug, intervalRaw] = String(ref).split('|');
     if (!userId || !planSlug) {
       return NextResponse.json({ error: 'invalid-external-reference' }, { status: 400 });
     }
+    const billingInterval: 'monthly' | 'annual' = intervalRaw === 'annual' ? 'annual' : 'monthly';
 
     const successEvents = new Set([
       'PAYMENT_CONFIRMED',
@@ -49,9 +50,20 @@ export async function POST(request: NextRequest) {
     if (successEvents.has(event)) {
       try {
         const supabaseAdmin = getSupabaseAdmin();
+        // compute expiration based on payment date and interval
+        const baseDateStr: string | undefined = (payment as any).paymentDate || (payment?.payment?.paymentDate);
+        const baseDate = baseDateStr ? new Date(baseDateStr) : new Date();
+        const expiresAt = new Date(baseDate);
+        if (billingInterval === 'annual') {
+          expiresAt.setFullYear(expiresAt.getFullYear() + 1);
+        } else {
+          // monthly
+          const m = expiresAt.getMonth();
+          expiresAt.setMonth(m + 1);
+        }
         const { error } = await supabaseAdmin
           .from('users')
-          .update({ plan: planSlug })
+          .update({ plan: planSlug, plan_expires_at: expiresAt.toISOString() })
           .eq('id', userId);
         if (error) {
           console.error('Erro ao atualizar plano do usuário:', error);

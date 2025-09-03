@@ -51,6 +51,8 @@ export default function CheckoutPage() {
   const { plans } = usePlans();
   const planSlug = searchParams.get('plan') || 'intermediate';
   const selectedPlan = plans.find((p) => p.slug === planSlug);
+  const initialInterval = (searchParams.get('interval') as 'monthly' | 'annual') || 'monthly';
+  const [billingInterval, setBillingInterval] = useState<'monthly' | 'annual'>(initialInterval);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [formData, setFormData] = useState({
     cpf: '',
@@ -164,6 +166,7 @@ export default function CheckoutPage() {
         },
         body: JSON.stringify({
           planSlug: selectedPlan.slug,
+          billingInterval,
           paymentMethod: selectedPayment,
           customer: {
             cpf: formData.cpf,
@@ -279,9 +282,50 @@ export default function CheckoutPage() {
                 {selectedPlan && (
                   <div className="p-4 bg-gray-50 rounded-md">
                     <h2 className="text-md font-semibold">Plano Selecionado</h2>
-                    <p className="text-sm text-gray-600">
-                      {selectedPlan.name} - R$ {selectedPlan.price}/mês
-                    </p>
+                    <div className="flex items-center justify-between mt-1">
+                      <div className="flex flex-col gap-1">
+                        <p className="text-sm text-gray-600">
+                          {(() => {
+                            const monthly = (selectedPlan as any).price_monthly ?? selectedPlan.price;
+                            const annual = (selectedPlan as any).price_annual ?? (monthly * 12);
+                            const value = billingInterval === 'annual' ? annual : monthly;
+                            const suffix = billingInterval === 'annual' ? '/ano' : '/mês';
+                            return `${selectedPlan.name} - R$ ${Number(value).toFixed(2)}${suffix}`;
+                          })()}
+                        </p>
+                        {(() => {
+                          const monthly = (selectedPlan as any).price_monthly ?? selectedPlan.price;
+                          const annual = (selectedPlan as any).price_annual ?? (monthly * 12);
+                          const fullYear = Number(monthly) * 12;
+                          const savings = Math.max(0, fullYear - Number(annual));
+                          const pct = fullYear > 0 ? Math.round((savings / fullYear) * 100) : 0;
+                          if (billingInterval === 'annual' && savings > 0) {
+                            return (
+                              <span className="text-xs text-green-700 bg-green-100 w-fit px-2 py-0.5 rounded-full">
+                                Economia anual: R$ {savings.toFixed(2)} ({pct}%)
+                              </span>
+                            );
+                          }
+                          return null;
+                        })()}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setBillingInterval('monthly')}
+                          className={`px-3 py-1 rounded-full border text-xs ${billingInterval === 'monthly' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300'}`}
+                        >
+                          Mensal
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => setBillingInterval('annual')}
+                          className={`px-3 py-1 rounded-full border text-xs ${billingInterval === 'annual' ? 'bg-blue-600 text-white border-blue-600' : 'bg-white text-gray-700 border-gray-300'}`}
+                        >
+                          Anual
+                        </button>
+                      </div>
+                    </div>
                     {selectedPlan.character_quota !== null && (
                       <p className="text-xs text-gray-500">
                         Até {selectedPlan.character_quota?.toLocaleString('pt-BR')} caracteres por mês
@@ -657,28 +701,41 @@ export default function CheckoutPage() {
                 <div className="w-full space-y-4">
                   {/* Order Summary */}
                   <div className="bg-gray-50 rounded-lg p-4">
-                    <div className="flex justify-between items-center mb-2">
-                      <span className="text-gray-600">Subtotal:</span>
-                      <span className="font-semibold">R$ {selectedPlan?.price ?? 0}</span>
-                    </div>
-                    {selectedPayment === 'pix' && (
-                      <div className="flex justify-between items-center mb-2">
-                        <span className="text-green-600">Desconto PIX (5%):</span>
-                        <span className="font-semibold text-green-600">
-                          -R$ {((selectedPlan?.price ?? 0) * 0.05).toFixed(2)}
-                        </span>
-                      </div>
-                    )}
-                    <Separator className="my-2" />
-                    <div className="flex justify-between items-center">
-                      <span className="text-lg font-bold">Total:</span>
-                      <span className="text-lg font-bold text-blue-600">
-                        R$ {selectedPayment === 'pix' 
-                          ? ((selectedPlan?.price ?? 0) * 0.95).toFixed(2)
-                          : (selectedPlan?.price ?? 0)
-                        }
-                      </span>
-                    </div>
+                    {(() => {
+                      const monthly = (selectedPlan as any)?.price_monthly ?? selectedPlan?.price ?? 0;
+                      const annual = (selectedPlan as any)?.price_annual ?? (monthly * 12);
+                      const subtotal = billingInterval === 'annual' ? Number(annual) : Number(monthly);
+                      const fullYear = Number(monthly) * 12;
+                      const savings = Math.max(0, fullYear - Number(annual));
+                      const pct = fullYear > 0 ? Math.round((savings / fullYear) * 100) : 0;
+                      const discount = selectedPayment === 'pix' ? Number((subtotal * 0.05).toFixed(2)) : 0;
+                      const total = selectedPayment === 'pix' ? Number((subtotal * 0.95).toFixed(2)) : subtotal;
+                      return (
+                        <>
+                          {billingInterval === 'annual' && savings > 0 && (
+                            <div className="flex justify-between items-center mb-2">
+                              <span className="text-gray-600 line-through">12× mensal: R$ {fullYear.toFixed(2)}</span>
+                              <span className="text-green-700 text-sm">Economia do anual: R$ {savings.toFixed(2)} ({pct}%)</span>
+                            </div>
+                          )}
+                          <div className="flex justify-between items-center mb-2">
+                            <span className="text-gray-600">Subtotal:</span>
+                            <span className="font-semibold">R$ {subtotal.toFixed(2)}</span>
+                          </div>
+                          {selectedPayment === 'pix' && (
+                            <div className="flex justify-between items-center mb-2">
+                              <span className="text-green-600">Desconto PIX (5%):</span>
+                              <span className="font-semibold text-green-600">-R$ {discount.toFixed(2)}</span>
+                            </div>
+                          )}
+                          <Separator className="my-2" />
+                          <div className="flex justify-between items-center">
+                            <span className="text-lg font-bold">Total:</span>
+                            <span className="text-lg font-bold text-blue-600">R$ {total.toFixed(2)}</span>
+                          </div>
+                        </>
+                      );
+                    })()}
                   </div>
                   
                 <Button
