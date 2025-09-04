@@ -24,12 +24,6 @@ import Footer from '@/components/Footer';
 
 const contactInfo = [
   {
-    icon: Phone,
-    title: 'Telefone',
-    info: '+55 (64) 99676-2041',
-    description: 'Seg a Sex, 9h às 18h'
-  },
-  {
     icon: Mail,
     title: 'Email',
     info: 'contato@draruth.com.br',
@@ -38,7 +32,7 @@ const contactInfo = [
   {
     icon: MapPin,
     title: 'Localização',
-    info: 'São Paulo, SP',
+    info: 'Goiânia, GO',
     description: 'Atendimento presencial e online'
   },
   {
@@ -104,6 +98,7 @@ export default function ContatoPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Contact Form */}
+            <div id="form">
             <Card className="bg-white shadow-xl">
               <CardHeader>
                 <CardTitle className="text-2xl text-gray-900 flex items-center">
@@ -129,7 +124,7 @@ export default function ContatoPage() {
                 <div className="grid md:grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="phone">Telefone</Label>
-                    <Input id="phone" placeholder="(64) 99676-2041" />
+                    <Input id="phone" placeholder="(99) 99998-9999" />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="company">Empresa (opcional)</Label>
@@ -169,6 +164,7 @@ export default function ContatoPage() {
                 </Button>
               </CardContent>
             </Card>
+            </div>
 
             {/* Contact Info */}
             <div className="space-y-8">
@@ -270,7 +266,7 @@ export default function ContatoPage() {
       </section>
 
       {/* FAQ Section */}
-      <section className="py-20 bg-gray-50">
+      <section id="faq" className="py-20 bg-gray-50">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
@@ -318,6 +314,19 @@ export default function ContatoPage() {
                 </CardContent>
               </Card>
             ))}
+          </div>
+
+          {/* Feedback CTA */}
+          <div className="mt-10 text-center">
+            <Card className="inline-block text-left">
+              <CardContent className="p-6">
+                <h3 className="text-xl font-semibold text-gray-900 mb-2">Tem melhorias, reclamações ou sugestões?</h3>
+                <p className="text-gray-600 mb-4">Ficaremos felizes em ouvir você. Envie seu feedback pelo formulário.</p>
+                <Button asChild className="bg-blue-600 hover:bg-blue-700 text-white">
+                  <Link href="#form">Enviar feedback</Link>
+                </Button>
+              </CardContent>
+            </Card>
           </div>
         </div>
       </section>

@@ -23,6 +23,7 @@ export function fallbackStyleBySelection(tipo: string, modelo: string): string {
   if (tipo === 'COMPLEMENTADOR') {
     if (modelo === 'argumentativo_reflexivo_critico_autoral') return 'Complemente com estilo argumentativo/reflexivo/crítico (autoral): fortaleça a tese, adicione justificativas e contra-argumentos, mantenha rigor e coesão.';
     if (modelo === 'analitico_critico') return 'Aprimore com tom analítico-crítico: refine conceitos, evidencie relações lógicas, melhore transições e elimine redundâncias.';
+    if (modelo === 'academico_critico') return 'Aprimore com tom acadêmico-crítico: use linguagem formal, melhore a estrutura argumentativa, adicione referências teóricas e mantenha coesão textual.';
   }
   return '';
 }

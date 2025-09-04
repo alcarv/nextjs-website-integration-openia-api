@@ -8,15 +8,15 @@ export default function Hero() {
     <section className="gradient-bg py-20 lg:py-32">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
-          <div className="text-center lg:text-left">
-            <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6">
+          <div className="text-center">
+            <h1 className="text-3xl lg:text-5xl font-bold text-gray-900 mb-6">
               <span className="text-gradient">Assessoria Acadêmica, Elaboração</span> e{' '}
               <span className="text-gradient">Humanização de Textos</span> com Excelência
             </h1>
-            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+            <p className="text-xl text-gray-600 mb-8 leading-relaxed text-justify">
               Auxílio personalizado para alunos de graduação, mestrado e doutorado. Desde a elaboração completa de trabalhos, até a paráfrase e humanização acadêmica, entrego textos consistentes, aprofundados e livres de marcas artificiais.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 asChild
                 size="lg"

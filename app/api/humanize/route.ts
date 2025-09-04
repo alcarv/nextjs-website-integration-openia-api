@@ -63,6 +63,7 @@ export async function POST(request: NextRequest) {
       COMPLEMENTADOR: { modelos: [
         'argumentativo_reflexivo_critico_autoral',
         'analitico_critico',
+        'academico_critico'
       ] },
     };
     if (!tipo || !modelo) {
@@ -151,6 +152,7 @@ export async function POST(request: NextRequest) {
 
     const humanizedVersions: string[] = [];
     const { system: resolvedSystem, promptId } = resolveSystemPrompt(tipo, modelo);
+    // Safe defaults if env vars not set (use widely available models)
     const responsesModel = process.env.OPENAI_RESPONSES_MODEL || 'gpt-5';
     const chatModel = process.env.OPENAI_CHAT_MODEL || 'gpt-4o-mini';
     const isPromptIdUsable = Boolean(promptId && !String(promptId).startsWith('prompt_id_replace_me'));
@@ -171,40 +173,49 @@ export async function POST(request: NextRequest) {
     };
 
     for (let i = 0; i < versions; i++) {
+      let pushed = false;
       if (isPromptIdUsable) {
-        console.log('Entrou aqui isPromptIdUsable');
-        const run = await (openai as any).responses.create({
-          model: responsesModel,
-          prompt: {
-            id: promptId
-          },
-          input: text,
-        });
-        const out = extractFromResponses(run);
-        if (out) humanizedVersions.push(out);
-      } else {
-        console.log('Entrou aqui sem promptId');
+        try {
+          const run = await (openai as any).responses.create({
+            model: responsesModel,
+            prompt: { id: promptId },
+            input: text,
+          });
+          const out = extractFromResponses(run);
+          if (out) {
+            humanizedVersions.push(out);
+            pushed = true;
+          }
+        } catch (e) {
+          console.warn('Falha ao usar Prompt ID; aplicando fallback para chat.completions.', e);
+        }
+      }
+      if (!pushed) {
         const completion = await openai.chat.completions.create({
           model: chatModel,
           messages: [
             {
-              role: "system",
-              content: `Você é um especialista brasileiro em linguagem e reescrita de textos. Siga as instruções conforme o modo selecionado pelo usuário.\n\n${resolvedSystem}\n\nRegras gerais:\n0. Preserve o significado e informações originais (nunca invente fatos)\n1. Mantenha coesão e naturalidade\n2. Varie estruturas e vocabulário quando apropriado\n3. Adapte o registro ao público-alvo do modo escolhido\n4. Evite marcas de IA e respostas metalinguísticas\n5. Saída apenas com o texto final (sem explicações)\n\n${versions > 1 ? `6. Esta é a versão ${i + 1} de ${versions}. Produza uma variação única mantendo o mesmo significado.` : ''}`
+              role: 'system',
+              content: `Você é um especialista brasileiro em linguagem e reescrita de textos. Siga as instruções conforme o modo selecionado pelo usuário.\n\n${resolvedSystem || ''}\n\nRegras gerais:\n0. Preserve o significado e informações originais (nunca invente fatos)\n1. Mantenha coesão e naturalidade\n2. Varie estruturas e vocabulário quando apropriado\n3. Adapte o registro ao público-alvo do modo escolhido\n4. Evite marcas de IA e respostas metalinguísticas\n5. Saída apenas com o texto final (sem explicações)\n\n${versions > 1 ? `6. Esta é a versão ${i + 1} de ${versions}. Produza uma variação única mantendo o mesmo significado.` : ''}`,
             },
             {
-              role: "user",
-              content: `${tipo === 'PARAFRASEADORES' ? 'Parafraseie o texto a seguir conforme as diretrizes.' : tipo === 'COMPLEMENTADOR' ? 'Aprimore o texto a seguir conforme as diretrizes.' : 'Humanize o texto a seguir conforme as diretrizes.'}\n\n${text}`
-            }
+              role: 'user',
+              content: `${tipo === 'PARAFRASEADORES' ? 'Parafraseie o texto a seguir conforme as diretrizes.' : tipo === 'COMPLEMENTADOR' ? 'Aprimore o texto a seguir conforme as diretrizes.' : 'Humanize o texto a seguir conforme as diretrizes.'}\n\n${text}`,
+            },
           ],
-          temperature: versions > 1 ? 0.8 + (i * 0.1) : 0.7,
+          temperature: versions > 1 ? 0.8 + i * 0.1 : 0.7,
           max_tokens: 2000,
         });
-        const humanizedText = completion.choices[0]?.message?.content;
-        if (humanizedText) humanizedVersions.push(humanizedText);
+        const humanizedText = completion.choices?.[0]?.message?.content;
+        if (humanizedText && humanizedText.trim()) {
+          humanizedVersions.push(humanizedText.trim());
+          pushed = true;
+        }
       }
     }
 
     if (humanizedVersions.length === 0) {
+      console.error('Nenhuma versão gerada. Verifique os modelos e credenciais. Tipo:', tipo, 'Modelo:', modelo, 'PromptId:', promptId);
       throw new Error('Erro ao gerar texto humanizado');
     }
 

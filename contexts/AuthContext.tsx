@@ -21,29 +21,51 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
     // Check if user is logged in
     const checkUser = async () => {
+      setLoading(true);
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
         await fetchUserData(session.user.id);
       }
-      setLoading(false);
+      if (isMounted) setLoading(false);
+      if (isMounted) setInitialized(true);
     };
 
     checkUser();
 
     // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if (session?.user) {
-        await fetchUserData(session.user.id);
-      } else {
+      if (!isMounted) return;
+
+      // Keep UI stable on background events like TOKEN_REFRESHED/USER_UPDATED
+      // Only toggle loading for explicit sign-in flow; sign-out clears user.
+      if (event === 'SIGNED_OUT') {
         setUser(null);
+        return;
+      }
+
+      if (session?.user) {
+        if (event === 'SIGNED_IN') {
+          // Initial sign-in: briefly show loading while fetching profile
+          setLoading(true);
+          await fetchUserData(session.user.id);
+          setLoading(false);
+        } else {
+          // Background refresh/update: refresh user silently without blocking UI
+          fetchUserData(session.user.id);
+        }
       }
     });
 
-    return () => subscription.unsubscribe();
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+    };
   }, []);
 
   const fetchUserData = async (userId: string) => {
@@ -109,7 +131,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   return (
     <AuthContext.Provider value={{
       user,
-      loading,
+      loading: loading || !initialized,
       signUp,
       signIn,
       signOut,

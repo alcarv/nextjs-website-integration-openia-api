@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -25,6 +26,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import AuthModal from '@/components/AuthModal';
 import { Progress } from '@/components/ui/progress';
 import { usePlans } from '@/hooks/usePlans';
+import { fallbackStyleBySelection } from '@/lib/resolvePrompt';
 
 export default function HumanizeText() {
   const MIN_CHARS = 350;
@@ -39,11 +41,15 @@ export default function HumanizeText() {
   const [copied, setCopied] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const { toast } = useToast();
-  const { user, refreshUser } = useAuth();
+  const { user, refreshUser, loading: authLoading } = useAuth();
   const router = useRouter();
-  const { plans } = usePlans();
+  const { plans, loading: plansLoading } = usePlans();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
   const [billingInterval, setBillingInterval] = useState<'monthly' | 'annual'>('monthly');
-  const currentPlan = plans.find((p) => p.slug === user?.plan);
+  const currentPlan = mounted && !authLoading && !plansLoading
+    ? plans.find((p) => p.slug === user?.plan)
+    : undefined;
   const freePlan = plans.find((p) => p.slug === 'free');
   
   const tiposConfig: Record<string, { label: string; modelos: { value: string; label: string }[] }> = {
@@ -76,6 +82,7 @@ export default function HumanizeText() {
       modelos: [
         { value: 'argumentativo_reflexivo_critico_autoral', label: 'COMPLEMENTAR TEXTOS NO ESTILO ARGUMENTATIVO/REFLEXIVO E CRÍTICO – autoral de Dra. Ruth Moniélly' },
         { value: 'analitico_critico', label: 'Aprimorador - Estilo Analítico-Crítico' },
+        { value: 'academico_critico', label: 'Aprimorador - Estilo Acadêmico-Crítico' }
       ],
     },
   };
@@ -232,6 +239,26 @@ export default function HumanizeText() {
     }
   };
 
+  // Detect route to preselect Tipo
+  const pathname = usePathname();
+  useEffect(() => {
+    if (!pathname) return;
+    let routeTipo = '';
+    if (pathname.includes('/parafraseador')) routeTipo = 'PARAFRASEADORES';
+    else if (pathname.includes('/complementador')) routeTipo = 'COMPLEMENTADOR';
+    else if (pathname.includes('/humanizar')) routeTipo = 'HUMANIZADORES';
+    if (routeTipo && routeTipo !== selectedTipo) {
+      setSelectedTipo(routeTipo);
+      setSelectedModelo('');
+    }
+  }, [pathname]);
+
+  const pageTitle = (() => {
+    if (pathname?.includes('/parafraseador')) return 'Parafraseador';
+    if (pathname?.includes('/complementador')) return 'Complementador';
+    return 'Humanizador';
+  })();
+
   const usagePercentage = (() => {
     if (!user || !currentPlan) return 0;
     if (user.plan === 'free' && currentPlan.humanizations_per_month !== null) {
@@ -248,12 +275,27 @@ export default function HumanizeText() {
   const wordCount = getWordCount(inputText);
   const isOver = exceedsLimits();
 
+  if (!mounted || authLoading || plansLoading) {
+    return (
+      <div className="min-h-screen bg-gray-50">
+        <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+          <div className="h-6 w-48 bg-gray-200 rounded animate-pulse mb-4" />
+          <div className="h-4 w-3/4 bg-gray-200 rounded animate-pulse mb-8" />
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div className="lg:col-span-1 h-44 bg-gray-100 rounded animate-pulse" />
+            <div className="lg:col-span-2 h-[60vh] bg-gray-100 rounded animate-pulse" />
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center py-20 mb-12">
           <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
-            <span className="text-gradient">Humanizador</span> de Textos IA
+            <span className="text-gradient">{pageTitle}</span> de Textos IA
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Transforme textos gerados por inteligência artificial em conteúdo natural, 
@@ -344,7 +386,7 @@ export default function HumanizeText() {
           </div>
         )}
 
-        <div className="grid lg:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 gap-8">
           {/* Input Card */}
           <Card className="bg-white">
             <CardHeader>
@@ -389,6 +431,20 @@ export default function HumanizeText() {
                     ))}
                   </select>
                 </div>
+                {selectedTipo && selectedModelo && fallbackStyleBySelection(selectedTipo, selectedModelo) && (
+                  <div className="md:col-span-2 -mt-2">
+                    <div className="flex items-start gap-2 text-sm text-gray-700 bg-blue-50 border border-blue-200 rounded-md p-3">
+                      <div className="mt-0.5 text-blue-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
+                          <circle cx="12" cy="12" r="10" />
+                          <line x1="12" y1="8" x2="12.01" y2="8" />
+                          <path d="M11 12h1v4h1" />
+                        </svg>
+                      </div>
+                      <p>{fallbackStyleBySelection(selectedTipo, selectedModelo)}</p>
+                    </div>
+                  </div>
+                )}
               </div>
               <Textarea
                 placeholder="Cole seu texto gerado por IA aqui..."
@@ -399,7 +455,7 @@ export default function HumanizeText() {
                 }}
                 disabled={!selectedTipo || !selectedModelo}
                 maxLength={MAX_CHARS}
-                className={`min-h-[300px] resize-none ${isOver || charTooShort || charTooLong ? 'border-red-500' : ''} ${!selectedTipo || !selectedModelo ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                className={`min-h-[60vh] resize-y ${isOver || charTooShort || charTooLong ? 'border-red-500' : ''} ${!selectedTipo || !selectedModelo ? 'bg-gray-100 cursor-not-allowed' : ''}`}
               />
               {!selectedTipo || !selectedModelo ? (
                 <p className="text-sm text-amber-600 mt-2">
@@ -472,7 +528,7 @@ export default function HumanizeText() {
                     <Textarea
                       value={version}
                       readOnly
-                      className="min-h-[200px] resize-none bg-gray-50"
+                      className="min-h-[40vh] resize-y bg-gray-50"
                     />
                     <div className="flex justify-end mt-4">
                       <Button 
@@ -513,7 +569,7 @@ export default function HumanizeText() {
                 placeholder="O texto humanizado aparecerá aqui..."
                 value={outputText}
                 readOnly
-                className="min-h-[300px] resize-none bg-gray-50"
+                className="min-h-[60vh] resize-y bg-gray-50"
               />
               <div className="flex justify-between items-center mt-4">
                 <span className="text-sm text-gray-500">
@@ -621,7 +677,7 @@ export default function HumanizeText() {
                 </p>
                 <div className="text-center">
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-red-100 text-red-800">
-                    ✓ Resultados em 5s
+                    ✓ Resultados em até 60s
                   </span>
                 </div>
               </div>

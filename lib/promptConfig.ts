@@ -20,5 +20,6 @@ export const PROMPT_IDS: Record<string, string> = {
   // COMPLEMENTADOR
   argumentativo_reflexivo_critico_autoral: 'pmpt_68b87aa994f08197b82f6cca737b90f906b445f500721fe7',
   analitico_critico: 'pmpt_68b87a6f89008194a261f63b53fb5e7807c9755546fd7c7b',
+  academico_critico: 'pmpt_68b8a00ca9d881958155ba46657c47a508620660d638b64c',
 };
 

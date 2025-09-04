@@ -1,8 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Menu, X, Scale, PenTool, Bot, Phone, User as UserIcon, LogOut } from 'lucide-react';
+import { Menu, X, Scale, PenTool, Bot, Phone, User as UserIcon, LogOut, Star } from 'lucide-react';
 import { BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/contexts/AuthContext';
@@ -11,16 +11,21 @@ import AuthModal from '@/components/AuthModal';
 export default function Navigation() {
   const [isOpen, setIsOpen] = useState(false);
   const [showAuthModal, setShowAuthModal] = useState(false);
-  const { user, signOut } = useAuth();
+  const { user, signOut, loading } = useAuth();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => { setMounted(true); }, []);
 
   const navItems = [
     { href: '/', label: 'Início', icon: UserIcon },
     { href: '/sobre', label: 'Sobre', icon: UserIcon },
     { href: '/servicos', label: 'Serviços', icon: Scale },
-    { href: '/humanizar', label: 'Humanizar Texto', icon: Bot },
+    { href: '/humanizar', label: 'Humanizador', icon: Bot },
+    { href: '/parafraseador', label: 'Parafraseador', icon: PenTool },
+    { href: '/complementador', label: 'Complementador', icon: Star },
     { href: '/blog', label: 'Blog', icon: BookOpen },
-    { href: '/contato', label: 'Contato', icon: Phone },
   ];
+
+  if (!mounted) return null;
 
   return (
     <nav className="bg-white/95 backdrop-blur-sm border-b border-gray-200 sticky top-0 z-50">
@@ -45,9 +50,16 @@ export default function Navigation() {
                 <span>{item.label}</span>
               </Link>
             ))}
-            {user ? (
+            {loading ? (
+              <div className="h-9 w-32 bg-gray-200 rounded animate-pulse" />
+            ) : user ? (
               <div className="flex items-center space-x-4">
-                <span className="text-sm text-gray-600">Olá, {user.name}</span>
+                <Link
+                  href="/conta"
+                  className="text-sm text-gray-700 hover:text-blue-600 transition-colors"
+                >
+                  Olá, {user.name}
+                </Link>
                 <Button
                   onClick={signOut}
                   variant="outline"
@@ -92,9 +104,17 @@ export default function Navigation() {
                   <span>{item.label}</span>
                 </Link>
               ))}
-              {user ? (
+              {loading ? (
+                <div className="h-10 bg-gray-200 rounded animate-pulse" />
+              ) : user ? (
                 <div className="space-y-2">
-                  <p className="text-sm text-gray-600">Olá, {user.name}</p>
+                  <Link
+                    href="/conta"
+                    className="text-sm text-gray-700 hover:text-blue-600"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Olá, {user.name}
+                  </Link>
                   <Button
                     onClick={signOut}
                     variant="outline"

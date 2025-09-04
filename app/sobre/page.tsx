@@ -106,12 +106,16 @@ export default function SobrePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div>
-              <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6">
+              <h1 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6 text-center">
                 Conheça a <span className="text-gradient">Dra. Ruth Monielly</span>
               </h1>
-              <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+              <p className="text-xl text-gray-600 leading-relaxed text-justify mb-6">
                 Sou advogada por formação desde 2018 e, iniciei minha trajetória como assessora acadêmica em 2017. Esse caminho começou ainda na graduação, quando percebi a dificuldade de muitos colegas em conciliar os trabalhos acadêmicos, do pré-projeto ao artigo final, com as múltiplas demandas da vida universitária. Movida pelo desejo de ajudar e pela necessidade de construir minha independência, decidi transformar essa realidade em oportunidade profissional.
+              </p>
+              <p className="text-xl text-gray-600 leading-relaxed text-justify mb-6">
                 Desde então, desenvolvi uma postura marcada pela exigência e pelo compromisso absoluto com a excelência. Não aceito resultados medianos: cada trabalho precisa refletir qualidade, consistência e dedicação. Essa busca constante pelo mais alto nível consolidou minha identidade profissional e me permitiu conquistar resultados expressivos ao longo desses oito anos de atuação.
+              </p>
+              <p className="text-xl text-gray-600 leading-relaxed text-justify mb-8">
                 Combinando minha formação jurídica com estratégias de escrita e organização acadêmica, ampliei minha atuação para diferentes áreas do conhecimento, atendendo alunos das ciências humanas às ciências jurídicas e exatas. Essa jornada me tornou referência na produção acadêmica, mantendo uma taxa de aprovação de 100% e conquistando a confiança de inúmeros clientes que encontraram, em meu trabalho, compromisso, excelência e entregas que superam expectativas.
               </p>
               <div className="flex flex-col sm:flex-row gap-4">

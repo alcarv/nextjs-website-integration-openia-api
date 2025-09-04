@@ -17,6 +17,7 @@ export default function Footer() {
     { name: 'Sobre', href: '/sobre' },
     { name: 'Serviços', href: '/servicos' },
     { name: 'Blog', href: '/blog' },
+    { name: 'FAQ', href: '/contato#faq' },
     { name: 'Contato', href: '/contato' },
     { name: 'Política de Privacidade', href: '/privacidade' }
   ];
