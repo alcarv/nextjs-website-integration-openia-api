@@ -9,6 +9,9 @@ const inter = Inter({ subsets: ['latin'] });
 export const metadata: Metadata = {
   title: 'Dr. Ruth Monielly - Redatora & Advogada',
   description: 'Serviços profissionais de redação e assesoria acadêmica. Humanização de textos gerados por IA.',
+  icons: {
+    icon: '/favicon.svg',
+  },
 };
 
 export default function RootLayout({

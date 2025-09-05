@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
   Bot,
   User,
@@ -277,7 +279,7 @@ export default function HumanizeText() {
 
   if (!mounted || authLoading || plansLoading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="bg-gray-50">
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
           <div className="h-6 w-48 bg-gray-200 rounded animate-pulse mb-4" />
           <div className="h-4 w-3/4 bg-gray-200 rounded animate-pulse mb-8" />
@@ -291,7 +293,7 @@ export default function HumanizeText() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="bg-gray-50 pb-16">
       <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center py-20 mb-12">
           <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
@@ -386,23 +388,13 @@ export default function HumanizeText() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 gap-8">
-          {/* Input Card */}
-          <Card className="bg-white">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <Bot className="h-5 w-5 text-blue-600" />
-                <span>Texto Original (IA)</span>
-              </CardTitle>
-              <CardDescription>
-                Cole aqui o texto gerado por IA que deseja humanizar
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              {/* Tipo e Modelo */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-700">Tipo</label>
+        {/* Playground-style Controls */}
+        <Card className="bg-white border mb-4">
+          <CardContent className="p-4">
+            <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full lg:max-w-3xl">
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-medium text-gray-600">Tipo</label>
                   <select
                     value={selectedTipo}
                     onChange={(e) => {
@@ -417,8 +409,8 @@ export default function HumanizeText() {
                     ))}
                   </select>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-medium text-gray-700">Modelo</label>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-medium text-gray-600">Modelo</label>
                   <select
                     value={selectedModelo}
                     onChange={(e) => setSelectedModelo(e.target.value)}
@@ -431,173 +423,148 @@ export default function HumanizeText() {
                     ))}
                   </select>
                 </div>
-                {selectedTipo && selectedModelo && fallbackStyleBySelection(selectedTipo, selectedModelo) && (
-                  <div className="md:col-span-2 -mt-2">
-                    <div className="flex items-start gap-2 text-sm text-gray-700 bg-blue-50 border border-blue-200 rounded-md p-3">
-                      <div className="mt-0.5 text-blue-600">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
-                          <circle cx="12" cy="12" r="10" />
-                          <line x1="12" y1="8" x2="12.01" y2="8" />
-                          <path d="M11 12h1v4h1" />
-                        </svg>
-                      </div>
-                      <p>{fallbackStyleBySelection(selectedTipo, selectedModelo)}</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-              <Textarea
-                placeholder="Cole seu texto gerado por IA aqui..."
-                value={inputText}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  setInputText(v.length > MAX_CHARS ? v.slice(0, MAX_CHARS) : v);
-                }}
-                disabled={!selectedTipo || !selectedModelo}
-                maxLength={MAX_CHARS}
-                className={`min-h-[60vh] resize-y ${isOver || charTooShort || charTooLong ? 'border-red-500' : ''} ${!selectedTipo || !selectedModelo ? 'bg-gray-100 cursor-not-allowed' : ''}`}
-              />
-              {!selectedTipo || !selectedModelo ? (
-                <p className="text-sm text-amber-600 mt-2">
-                  Para começar, selecione o Tipo e o Modelo acima.
-                </p>
-              ) : null}
-              <div className="flex justify-between items-center mt-4">
-                <span className={`text-sm ${isOver || charTooShort || charTooLong ? 'text-red-500' : 'text-gray-500'}`}>
-                  {user?.plan === 'free' ? `${wordCount} palavras (${charCount}/${MAX_CHARS} caracteres)` : `${charCount}/${MAX_CHARS} caracteres`} · mínimo {MIN_CHARS}
-                  </span>
-                {!user ? (
-                  <Button 
-                    onClick={() => setShowAuthModal(true)}
-                    className="bg-blue-600 hover:bg-blue-700 text-white"
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-medium text-gray-600">Versões</label>
+                  <select
+                    value={selectedVersions}
+                    onChange={(e) => setSelectedVersions(Number(e.target.value))}
+                    className="px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                   >
-                    <Lock className="mr-2 h-4 w-4" />
-                    Entrar para Usar
+                    <option value={1}>1 versão</option>
+                    <option value={2}>2 versões</option>
+                    <option value={3}>3 versões</option>
+                  </select>
+                </div>
+              </div>
+              <div className="flex items-center gap-3">
+                {!user ? (
+                  <Button onClick={() => setShowAuthModal(true)} className="bg-blue-600 hover:bg-blue-700 text-white">
+                    <Lock className="mr-2 h-4 w-4" /> Entrar para Usar
                   </Button>
                 ) : (
-                  <div className="space-y-4">
-                    {charTooShort && (
-                      <p className="text-sm text-red-600">O texto precisa ter pelo menos {MIN_CHARS} caracteres.</p>
-                    )}
-                    <div className="flex items-center space-x-4">
-                      <label className="text-sm font-medium text-gray-700">
-                        Versões:
-                      </label>
-                      <select
-                        value={selectedVersions}
-                        onChange={(e) => setSelectedVersions(Number(e.target.value))}
-                        className="px-3 py-1 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                      >
-                        <option value={1}>1 versão</option>
-                        <option value={2}>2 versões</option>
-                        <option value={3}>3 versões</option>
-                      </select>
-                    </div>
-                    <Button 
-                      onClick={handleHumanize}
-                      disabled={Boolean(isLoading || !selectedTipo || !selectedModelo || !inputText.trim() || charTooShort || charTooLong || !canUseService() || isOver)}
-                      className="bg-blue-600 hover:bg-blue-700 text-white disabled:opacity-50 w-full"
-                    >
-                      {isLoading ? 'Humanizando...' : `Gerar ${selectedVersions} ${selectedVersions === 1 ? 'Versão' : 'Versões'}`}
-                    </Button>
-                  </div>
+                  <Button
+                    onClick={handleHumanize}
+                    disabled={Boolean(isLoading || !selectedTipo || !selectedModelo || !inputText.trim() || charTooShort || charTooLong || !canUseService() || isOver)}
+                    className="bg-gradient-to-r from-blue-600 to-red-600 hover:from-blue-700 hover:to-red-700 text-white disabled:opacity-50"
+                  >
+                    {isLoading ? 'Gerando…' : `Gerar ${selectedVersions} ${selectedVersions === 1 ? 'Versão' : 'Versões'}`}
+                  </Button>
                 )}
               </div>
-            </CardContent>
-          </Card>
-
-          {/* Output Card */}
-          <div className="space-y-6">
-            {outputVersions.length > 1 ? (
-              outputVersions.map((version, index) => (
-                <Card key={index} className="bg-white">
-                  <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        <User className="h-5 w-5 text-green-600" />
-                        <span>Versão {index + 1}</span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <div className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
-                          {version.length} caracteres
-                        </div>
-                      </div>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <Textarea
-                      value={version}
-                      readOnly
-                      className="min-h-[40vh] resize-y bg-gray-50"
-                    />
-                    <div className="flex justify-end mt-4">
-                      <Button 
-                        onClick={() => handleCopy(version)}
-                        variant="outline"
-                        size="sm"
-                        className="border-green-600 text-green-600 hover:bg-green-50"
-                      >
-                        {copied ? (
-                          <>
-                            <CheckCircle className="mr-2 h-4 w-4" />
-                            Copiado!
-                          </>
-                        ) : (
-                          <>
-                            <Copy className="mr-2 h-4 w-4" />
-                            Copiar
-                          </>
-                        )}
-                      </Button>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))
-            ) : (
-              <Card className="bg-white">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <User className="h-5 w-5 text-green-600" />
-                <span>Texto Humanizado</span>
-              </CardTitle>
-              <CardDescription>
-                Resultado humanizado e natural
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Textarea
-                placeholder="O texto humanizado aparecerá aqui..."
-                value={outputText}
-                readOnly
-                className="min-h-[60vh] resize-y bg-gray-50"
-              />
-              <div className="flex justify-between items-center mt-4">
-                <span className="text-sm text-gray-500">
-                  {outputText.length} caracteres
-                </span>
-                <Button 
-                  onClick={() => handleCopy()}
-                  disabled={!outputText}
-                  variant="outline"
-                  className="border-green-600 text-green-600 hover:bg-green-50"
-                >
-                  {copied ? (
-                    <>
-                      <CheckCircle className="mr-2 h-4 w-4" />
-                      Copiado!
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="mr-2 h-4 w-4" />
-                      Copiar Texto
-                    </>
-                  )}
-                </Button>
+            </div>
+            {selectedTipo && selectedModelo && fallbackStyleBySelection(selectedTipo, selectedModelo) && (
+              <div className="mt-3">
+                <div className="flex items-start gap-2 text-sm text-gray-700 bg-blue-50 border border-blue-200 rounded-md p-3">
+                  <div className="mt-0.5 text-blue-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
+                      <circle cx="12" cy="12" r="10" />
+                      <line x1="12" y1="8" x2="12.01" y2="8" />
+                      <path d="M11 12h1v4h1" />
+                    </svg>
+                  </div>
+                  <p>{fallbackStyleBySelection(selectedTipo, selectedModelo)}</p>
+                </div>
               </div>
-            </CardContent>
-          </Card>
             )}
-          </div>
+          </CardContent>
+        </Card>
+
+        {/* Horizontal playground panes */}
+        <div className="rounded-lg border bg-white">
+          <ResizablePanelGroup direction="horizontal" className="min-h-[85vh]">
+            <ResizablePanel defaultSize={50} minSize={30}>
+              <div className="h-full flex flex-col">
+                <div className="flex items-center justify-between px-4 py-3 border-b bg-gray-50/60">
+                  <div className="flex items-center gap-2 text-gray-700">
+                    <Bot className="h-4 w-4 text-blue-600" />
+                    <span className="font-medium">Entrada</span>
+                  </div>
+                  <span className={`text-xs ${isOver || charTooShort || charTooLong ? 'text-red-600' : 'text-gray-500'}`}>
+                    {user?.plan === 'free' ? `${wordCount} palavras (${charCount}/${MAX_CHARS})` : `${charCount}/${MAX_CHARS}`} · min {MIN_CHARS}
+                  </span>
+                </div>
+                <div className="p-4 flex-1 min-h-0 flex flex-col">
+                  <Textarea
+                    placeholder="Cole seu texto gerado por IA aqui..."
+                    value={inputText}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      setInputText(v.length > MAX_CHARS ? v.slice(0, MAX_CHARS) : v);
+                    }}
+                    disabled={!selectedTipo || !selectedModelo}
+                    maxLength={MAX_CHARS}
+                    className={`flex-1 min-h-0 resize-none text-base leading-6 ${isOver || charTooShort || charTooLong ? 'border-red-500' : ''} ${!selectedTipo || !selectedModelo ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                  />
+                  {!selectedTipo || !selectedModelo ? (
+                    <p className="text-xs text-amber-600 mt-2">
+                      Para começar, selecione o Tipo e o Modelo acima.
+                    </p>
+                  ) : null}
+                  {charTooShort && !!inputText && (
+                    <p className="text-xs text-red-600 mt-2">O texto precisa ter pelo menos {MIN_CHARS} caracteres.</p>
+                  )}
+                </div>
+              </div>
+            </ResizablePanel>
+            <ResizableHandle withHandle />
+            <ResizablePanel defaultSize={50} minSize={30}>
+              <div className="h-full flex flex-col">
+                <div className="flex items-center justify-between px-4 py-3 border-b bg-gray-50/60">
+                  <div className="flex items-center gap-2 text-gray-700">
+                    <User className="h-4 w-4 text-green-600" />
+                    <span className="font-medium">Saída</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500">{outputText?.length ?? 0} caracteres</span>
+                    <Button onClick={() => handleCopy()} disabled={!outputText} variant="outline" size="sm" className="border-green-600 text-green-700 hover:bg-green-50">
+                      {copied ? (
+                        <>
+                          <CheckCircle className="mr-2 h-3.5 w-3.5" /> Copiado
+                        </>
+                      ) : (
+                        <>
+                          <Copy className="mr-2 h-3.5 w-3.5" /> Copiar
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                </div>
+                <div className="p-4 flex-1 min-h-0">
+                  {outputVersions.length > 1 ? (
+                    <Tabs defaultValue="0" className="h-full flex flex-col">
+                      <div className="flex items-center justify-between mb-2">
+                        <TabsList>
+                          {outputVersions.map((_, i) => (
+                            <TabsTrigger key={i} value={`${i}`}>V{i + 1}</TabsTrigger>
+                          ))}
+                        </TabsList>
+                      </div>
+                      {outputVersions.map((version, i) => (
+                        <TabsContent key={i} value={`${i}`} className="flex-1 min-h-0">
+                          <Textarea value={version} readOnly className="h-full min-h-0 resize-none bg-gray-50 text-base leading-6" />
+                          <div className="flex justify-end mt-3">
+                            <Button onClick={() => handleCopy(version)} variant="outline" size="sm" className="border-green-600 text-green-700 hover:bg-green-50">
+                              {copied ? (
+                                <>
+                                  <CheckCircle className="mr-2 h-3.5 w-3.5" /> Copiado
+                                </>
+                              ) : (
+                                <>
+                                  <Copy className="mr-2 h-3.5 w-3.5" /> Copiar esta versão
+                                </>
+                              )}
+                            </Button>
+                          </div>
+                        </TabsContent>
+                      ))}
+                    </Tabs>
+                  ) : (
+                    <Textarea placeholder="O texto humanizado aparecerá aqui..." value={outputText} readOnly className="h-full min-h-0 resize-none bg-gray-50 text-base leading-6" />
+                  )}
+                </div>
+              </div>
+            </ResizablePanel>
+          </ResizablePanelGroup>
         </div>
 
         {/* Pricing Plans Section */}

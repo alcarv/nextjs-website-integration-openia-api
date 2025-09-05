@@ -5,9 +5,11 @@ import Footer from '@/components/Footer';
 
 export default function HumanizarPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white flex flex-col">
       <Navigation />
-      <HumanizeText />
+      <main className="flex-1">
+        <HumanizeText />
+      </main>
       <Footer />
       <Toaster />
     </div>
