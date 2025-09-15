@@ -305,7 +305,6 @@ export default function SobrePage() {
                   <p className="text-gray-600 mb-6 italic">{testimonial.text}</p>
                   <div>
                     <div className="font-semibold text-gray-900">{testimonial.name}</div>
-                    <div className="text-sm text-gray-500">{testimonial.company}</div>
                   </div>
                 </CardContent>
               </Card>

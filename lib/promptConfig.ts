@@ -5,7 +5,9 @@ export const PROMPT_IDS: Record<string, string> = {
   tecnico_expositivo: 'pmpt_68b38d65cff48195815563c859dd3b150924f50227baa5ae',
   narrativo_interpretativo: 'pmpt_68b8769ce7f8819793e75dc7e594661d07f860ede12fae59',
   multiversoes: 'pmpt_68b877c7c4a0819693fc1f24f270e46500ea94cb89812c97',
-
+  dissertativo_expositivo: 'pmpt_68c878bf6828819088c38aa8cdf6eb3803ba42636c5be713',
+  explicativa_informativa: 'pmpt_68c873c4d3248196a13f44f319ca7b1f09b59820429f3a99',
+  dissertativa_reflexiva: 'pmpt_68c8717aa30c819496410b2edc21eec408dc29b26b1ccc02',
   // PARAFRASEADORES
   autoral_ruth: 'pmpt_68b87821ff248193bfb2fdb32930cdbf0de940491b669be8',
   juridicas_politicas: 'pmpt_68b878598ed48194b20dc559b54e5ca602eaf33ee0624bda',

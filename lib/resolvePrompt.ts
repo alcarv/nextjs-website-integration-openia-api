@@ -8,6 +8,9 @@ export function fallbackStyleBySelection(tipo: string, modelo: string): string {
     if (modelo === 'tecnico_expositivo') return 'Estilo técnico-expositivo: precisão terminológica, frases objetivas, coesão por conectores técnicos, elimine ambiguidade e coloquialismos.';
     if (modelo === 'narrativo_interpretativo') return 'Estilo narrativo-interpretativo: fluxo narrativo com interpretações e leituras do fenômeno, mantendo coesão, sem perder rigor e sem criar fatos.';
     if (modelo === 'multiversoes') return 'Produza variações naturais do mesmo conteúdo, mudando vocabulário e estruturas, preservando integralmente o sentido.';
+    if (modelo === 'dissertativo_expositivo') return 'Estilo dissertativo-expositivo: apresente ideias de forma clara e lógica, com introdução, desenvolvimento e conclusão, mantendo objetividade e coesão.';
+    if (modelo === 'explicativa_informativa') return 'Estilo explicativo-informativo: forneça informações claras e detalhadas, explicando conceitos e processos de forma acessível, com coesão e precisão.';
+    if (modelo === 'dissertativa_reflexiva') return 'Estilo dissertativo-reflexivo: apresente argumentos com profundidade, incluindo reflexões pessoais fundamentadas, mantendo rigor acadêmico e coesão textual.';
   }
   if (tipo === 'PARAFRASEADORES') {
     if (modelo === 'autoral_ruth') return 'Parafraseie em estilo autoral (Dra. Ruth Monielly): voz confiante, clareza, densidade conceitual e coesão; não invente dados.';

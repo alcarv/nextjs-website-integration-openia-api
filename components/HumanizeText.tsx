@@ -63,6 +63,9 @@ export default function HumanizeText() {
         { value: 'tecnico_expositivo', label: 'Humanizador - Estilo Técnico-Expositivo' },
         { value: 'narrativo_interpretativo', label: 'Humanizador Com Estilo Narrativo-Interpretativo' },
         { value: 'multiversoes', label: 'Humanização Multiversões' },
+        { value: 'dissertativo_expositivo', label: 'Humanizador - Estilo Dissertativo-Expositivo' },
+        { value: 'explicativa_informativa', label: 'Humanizador - Estilo Explicativo-Informativo' },
+        { value: 'dissertativa_reflexiva', label: 'Humanizador - Estilo Dissertativa-Reflexiva' },
       ],
     },
     PARAFRASEADORES: {
