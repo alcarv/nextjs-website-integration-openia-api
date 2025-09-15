@@ -42,33 +42,30 @@ const achievements = [
     icon: Users,
     title: 'Clientes Atendidos',
     description: 'Empresas e profissionais de diversos segmentos',
-    metric: '100+ clientes'
+    metric: '350+ clientes'
   },
   {
     icon: TrendingUp,
     title: 'Resultados',
     description: 'Taxa média de sucesso em casos e campanhas',
-    metric: '95% sucesso'
+    metric: '100% sucesso'
   }
 ];
 
 const testimonials = [
   {
-    name: 'Carlos Mendes',
-    company: 'CEO, TechStart',
-    text: 'A Dra. Ruth transformou nossa comunicação jurídica. Contratos claros e copy que converte. Profissional excepcional.',
+    name: 'Aline Estefany',
+    text: 'A melhor!! Trabalho impecável !! Nota 1000000… confiaria meu trabalho a você quantas vezes fossem necessário!!',
     rating: 5
   },
   {
-    name: 'Marina Silva',
-    company: 'Diretora, Fashion Brand',
-    text: 'Combinação perfeita de conhecimento jurídico e habilidade de comunicação. Resultados impressionantes.',
+    name: 'Karolayne Alves',
+    text: 'Excelente profissional, exerce um trabalho brilhante e com muita dedicação!',
     rating: 5
   },
   {
-    name: 'Roberto Costa',
-    company: 'Fundador, EduTech',
-    text: 'Assessoria jurídica preventiva e copy que multiplica vendas. Investimento que se paga rapidamente.',
+    name: 'Lorraine Moraes',
+    text: 'Amei trabalhos perfeito ótima profissional 💓 nota 10 💓🌹',
     rating: 5
   }
 ];
@@ -131,7 +128,7 @@ export default function SobrePage() {
                     className="flex items-center"
                   >
                     <Calendar className="mr-2 h-5 w-5" />
-                    Agendar Consulta
+                    Falar com Dra. Ruth Moniélly
                   </Link>
                 </Button>
                 <Button
@@ -244,7 +241,7 @@ export default function SobrePage() {
                   </div>
                   <div>
                     <div className="font-semibold text-gray-900">Dra. Ruth Monielly</div>
-                    <div className="text-sm text-gray-500">Advogada & Copywriter</div>
+                    <div className="text-sm text-gray-500">Advogada & Assesora Acadêmica</div>
                   </div>
                 </div>
               </div>
@@ -340,7 +337,7 @@ export default function SobrePage() {
                 className="flex items-center"
               >
                 <Calendar className="mr-2 h-5 w-5" />
-                Agendar Consulta
+                Falar com Dra. Ruth Moniélly
               </Link>
             </Button>
             <Button

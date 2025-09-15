@@ -16,7 +16,6 @@ import {
   Calendar,
   CheckCircle,
   ArrowRight,
-  Linkedin,
   Instagram,
   Facebook
 } from 'lucide-react';
@@ -87,7 +86,7 @@ export default function ContatoPage() {
               className="flex items-center"
             >
               <Calendar className="mr-2 h-5 w-5" />
-              Agendar Consulta Gratuita
+              Falar com Dra. Ruth Moniélly
             </Link>
           </Button>
         </div>
@@ -200,10 +199,6 @@ export default function ContatoPage() {
               <div className="bg-white p-6 rounded-lg shadow-md">
                 <h3 className="text-xl font-bold text-gray-900 mb-4">Redes Sociais</h3>
                 <div className="flex space-x-4">
-                  <Button variant="outline" size="sm" className="border-blue-600 text-blue-600 hover:bg-blue-50">
-                    <Linkedin className="h-4 w-4 mr-2" />
-                    LinkedIn
-                  </Button>
                   <Button variant="outline" size="sm" className="border-pink-600 text-pink-600 hover:bg-pink-50">
                     <Instagram className="h-4 w-4 mr-2" />
                     Instagram

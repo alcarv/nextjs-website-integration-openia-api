@@ -28,7 +28,7 @@ export default function Hero() {
                   rel="noopener noreferrer"
                   className="flex items-center"
                 >
-                  Agendar Consulta
+                  Falar Diretamente com a Dra. Ruth Monielly
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>

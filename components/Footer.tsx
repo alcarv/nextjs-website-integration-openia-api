@@ -1,15 +1,15 @@
 import Link from 'next/link';
-import { Scale, Mail, Phone, MapPin, Facebook, Instagram, Linkedin, Twitter } from 'lucide-react';
+import { Scale, Mail, Phone, MapPin, Facebook, Instagram } from 'lucide-react';
 
 export default function Footer() {
   const currentYear = new Date().getFullYear();
 
   const services = [
-    { name: 'Consultoria Jurídica', href: '/servicos' },
-    { name: 'Redação Jurídica', href: '/servicos' },
-    { name: 'Humanizar Textos IA', href: '/humanizar' },
-    { name: 'Treinamentos', href: '/servicos' },
-    { name: 'Assessoria Empresarial', href: '/servicos' }
+    { name: 'Escrita Acadêmica', href: '/servicos' },
+    { name: 'Orientação Acadêmica', href: '/servicos' },
+    { name: 'Humanização de Textos', href: '/humanizar' },
+    { name: 'Formatação de Textos', href: '/servicos' },
+    { name: 'Slide de Apresentação', href: '/servicos' },
   ];
 
   const quickLinks = [
@@ -24,9 +24,7 @@ export default function Footer() {
 
   const socialLinks = [
     { name: 'Facebook', href: '#', icon: Facebook },
-    { name: 'Instagram', href: '#', icon: Instagram },
-    { name: 'LinkedIn', href: '#', icon: Linkedin },
-    { name: 'Twitter', href: '#', icon: Twitter }
+    { name: 'Instagram', href: '#', icon: Instagram }
   ];
 
   return (
@@ -99,7 +97,7 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-6 text-white">Conecte-se</h3>
             <p className="text-gray-300 mb-4">
-              Receba dicas jurídicas e de copywriting diretamente no seu email.
+              Receba orientações acadêmicas e acompanhe as atualizações sempre que eu publicar um novo artigo
             </p>
             <div className="mb-6">
               <div className="flex">
@@ -160,16 +158,12 @@ export default function Footer() {
         <div className="border-t border-gray-800 mt-8 pt-8">
           <div className="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-8">
             <div className="flex items-center space-x-2 text-gray-400 text-sm">
-              <Scale className="h-4 w-4" />
-              <span>OAB/SP 123.456</span>
-            </div>
-            <div className="flex items-center space-x-2 text-gray-400 text-sm">
               <span className="w-2 h-2 bg-green-500 rounded-full"></span>
               <span>Certificado em Assessoria Acadêmica</span>
             </div>
             <div className="flex items-center space-x-2 text-gray-400 text-sm">
               <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-              <span>Especialista em IA</span>
+              <span>Especialista em Escrita Acadêmica de Excelência</span>
             </div>
           </div>
         </div>

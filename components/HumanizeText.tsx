@@ -195,13 +195,15 @@ export default function HumanizeText() {
       const data = await response.json();
       if (data.humanizedVersions && Array.isArray(data.humanizedVersions)) {
         setOutputVersions(data.humanizedVersions);
-        setOutputText(data.humanizedVersions[0] || '');
+        const combined = data.humanizedVersions
+          .map((v: string, i: number) => `Versão ${i + 1}:\n${v}`)
+          .join("\n\n");
+        setOutputText(combined || '');
       } else {
         setOutputText(data.humanizedText || '');
         setOutputVersions([data.humanizedText || '']);
       }
       
-      // Refresh user data to update usage count
       await refreshUser();
       
       toast({
@@ -531,37 +533,12 @@ export default function HumanizeText() {
                   </div>
                 </div>
                 <div className="p-4 flex-1 min-h-0">
-                  {outputVersions.length > 1 ? (
-                    <Tabs defaultValue="0" className="h-full flex flex-col">
-                      <div className="flex items-center justify-between mb-2">
-                        <TabsList>
-                          {outputVersions.map((_, i) => (
-                            <TabsTrigger key={i} value={`${i}`}>V{i + 1}</TabsTrigger>
-                          ))}
-                        </TabsList>
-                      </div>
-                      {outputVersions.map((version, i) => (
-                        <TabsContent key={i} value={`${i}`} className="flex-1 min-h-0">
-                          <Textarea value={version} readOnly className="h-full min-h-0 resize-none bg-gray-50 text-base leading-6" />
-                          <div className="flex justify-end mt-3">
-                            <Button onClick={() => handleCopy(version)} variant="outline" size="sm" className="border-green-600 text-green-700 hover:bg-green-50">
-                              {copied ? (
-                                <>
-                                  <CheckCircle className="mr-2 h-3.5 w-3.5" /> Copiado
-                                </>
-                              ) : (
-                                <>
-                                  <Copy className="mr-2 h-3.5 w-3.5" /> Copiar esta versão
-                                </>
-                              )}
-                            </Button>
-                          </div>
-                        </TabsContent>
-                      ))}
-                    </Tabs>
-                  ) : (
-                    <Textarea placeholder="O texto humanizado aparecerá aqui..." value={outputText} readOnly className="h-full min-h-0 resize-none bg-gray-50 text-base leading-6" />
-                  )}
+                  <Textarea
+                    placeholder="O texto humanizado aparecerá aqui..."
+                    value={outputText}
+                    readOnly
+                    className="h-full min-h-0 resize-none bg-gray-50 text-base leading-6"
+                  />
                 </div>
               </div>
             </ResizablePanel>
