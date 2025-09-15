@@ -277,7 +277,8 @@ export default function HumanizeText() {
   const wordCount = getWordCount(inputText);
   const isOver = exceedsLimits();
 
-  if (!mounted || authLoading || plansLoading) {
+  // Do not block the entire page on plans loading; render immediately after auth init
+  if (!mounted || authLoading) {
     return (
       <div className="bg-gray-50">
         <div className="max-w-screen-2xl mx-auto px-4 sm:px-6 lg:px-8 py-20">

@@ -25,12 +25,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     let isMounted = true;
-    // Check if user is logged in
     const checkUser = async () => {
       setLoading(true);
       const { data: { session } } = await supabase.auth.getSession();
       if (session?.user) {
-        await fetchUserData(session.user.id);
+        fetchUserData(session.user.id);
       }
       if (isMounted) setLoading(false);
       if (isMounted) setInitialized(true);
@@ -38,27 +37,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     checkUser();
 
-    // Listen for auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!isMounted) return;
 
-      // Keep UI stable on background events like TOKEN_REFRESHED/USER_UPDATED
-      // Only toggle loading for explicit sign-in flow; sign-out clears user.
       if (event === 'SIGNED_OUT') {
         setUser(null);
+        setLoading(false);
+        setInitialized(true);
         return;
       }
 
       if (session?.user) {
-        if (event === 'SIGNED_IN') {
-          // Initial sign-in: briefly show loading while fetching profile
-          setLoading(true);
-          await fetchUserData(session.user.id);
-          setLoading(false);
-        } else {
-          // Background refresh/update: refresh user silently without blocking UI
-          fetchUserData(session.user.id);
-        }
+        fetchUserData(session.user.id);
       }
     });
 
@@ -95,7 +85,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     if (error) throw error;
 
-    // If email confirmation is required, no session will be active
     const needsVerification = !data.session;
     if (data.session && data.user) {
       const u = await fetchUserData(data.user.id);
