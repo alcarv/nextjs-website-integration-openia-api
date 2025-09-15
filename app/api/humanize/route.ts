@@ -48,6 +48,9 @@ export async function POST(request: NextRequest) {
         'tecnico_expositivo',
         'narrativo_interpretativo',
         'multiversoes',
+        'dissertativo_expositivo',
+        'explicativa_informativa',
+        'dissertativa_reflexiva',
       ] },
       PARAFRASEADORES: { modelos: [
         'autoral_ruth',
