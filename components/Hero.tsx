@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Scale, PenTool, Shield } from 'lucide-react';
+import { ArrowRight, Scale, PenTool, Shield, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 import { getWhatsAppUrl } from '@/lib/whatsapp';
 
@@ -42,6 +42,14 @@ export default function Hero() {
                   <PenTool className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
+            </div>
+            <div className="mt-6 flex justify-center">
+              <div className="inline-flex items-start gap-3 rounded-xl border border-blue-200 bg-white/70 px-4 py-3 text-left shadow-sm backdrop-blur">
+                <CheckCircle2 className="mt-0.5 h-5 w-5 text-blue-600" />
+                <p className="text-sm text-gray-700 max-w-xl">
+                  <span className="font-medium">Garantia de originalidade:</span> Todas as opções, humanização, paráfrase ou complemento, entregam textos livres de inteligência artificial, com escrita 100% autoral.
+                </p>
+              </div>
             </div>
           </div>
           

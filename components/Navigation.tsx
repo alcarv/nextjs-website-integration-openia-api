@@ -22,7 +22,7 @@ export default function Navigation() {
     { href: '/humanizar', label: 'Humanizador', icon: Bot },
     { href: '/parafraseador', label: 'Parafraseador', icon: PenTool },
     { href: '/complementador', label: 'Complementador', icon: Star },
-    { href: '/blog', label: 'Blog', icon: BookOpen },
+    { href: '/blog', label: 'Publicações', icon: BookOpen },
   ];
 
   if (!mounted) return null;

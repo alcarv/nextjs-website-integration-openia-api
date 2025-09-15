@@ -42,7 +42,7 @@ const achievements = [
     icon: Users,
     title: 'Clientes Atendidos',
     description: 'Empresas e profissionais de diversos segmentos',
-    metric: '350+ clientes'
+    metric: '1000+ clientes'
   },
   {
     icon: TrendingUp,
@@ -232,8 +232,7 @@ export default function SobrePage() {
               <div className="bg-gradient-to-br from-blue-50 to-red-50 rounded-2xl p-8">
                 <Quote className="h-12 w-12 text-blue-600 mb-6" />
                 <blockquote className="text-xl text-gray-700 italic mb-6">
-                  &quot;Acredito que o direito e a comunicação andam juntos. Não basta ter razão;
-                  é preciso saber comunicar essa razão de forma clara, persuasiva e eficaz.&quot;
+                  &quot;Acredito que todo conteúdo pode ser lapidado até atingir sua melhor versão.&quot;
                 </blockquote>
                 <div className="flex items-center space-x-4">
                   <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-red-600 rounded-full flex items-center justify-center">
@@ -241,7 +240,7 @@ export default function SobrePage() {
                   </div>
                   <div>
                     <div className="font-semibold text-gray-900">Dra. Ruth Monielly</div>
-                    <div className="text-sm text-gray-500">Advogada & Assesora Acadêmica</div>
+                    <div className="text-sm text-gray-500">Advogada & Assessora Acadêmica</div>
                   </div>
                 </div>
               </div>
