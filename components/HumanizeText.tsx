@@ -681,12 +681,12 @@ export default function HumanizeText() {
                 </div>
                 <h4 className="text-xl font-bold text-gray-900 mb-4">Para Redatores</h4>
                 <p className="text-gray-600 mb-4">
-                  Crie conteúdo profissional autêntico para blogs, redes sociais e marketing.
+                 Crie conteúdos acadêmicos com excelência
                 </p>
                 <ul className="text-sm text-gray-500 space-y-1">
-                  <li>✓ Posts para blog</li>
-                  <li>✓ Conteúdo para redes sociais</li>
-                  <li>✓ E-mails marketing</li>
+                  <li>✓ Artigos Científicos</li>
+                  <li>✓ Tccs Pre Projetos</li>
+                  <li>✓ Todo tipo de Escrita Acadêmica</li>
                 </ul>
               </div>
 
@@ -699,9 +699,8 @@ export default function HumanizeText() {
                   Escale a produção de conteúdo mantendo qualidade e autenticidade.
                 </p>
                 <ul className="text-sm text-gray-500 space-y-1">
-                  <li>✓ Conteúdo em escala</li>
-                  <li>✓ Documentação técnica</li>
-                  <li>✓ Materiais de treinamento</li>
+                  <li>✓ Revisão de Textos</li>
+                  <li>✓ Aprimorador de conteúdos</li>
                 </ul>
               </div>
             </div>
