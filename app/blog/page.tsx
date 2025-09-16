@@ -19,114 +19,34 @@ import {
   MessageSquare
 } from 'lucide-react';
 import Footer from '@/components/Footer';
+import Link from 'next/link';
+import { posts as allPosts, featuredPost as featured } from '@/lib/posts';
 
-const featuredPost = {
-  id: 1,
-  title: 'Como a IA está Revolucionando o Copywriting Jurídico',
-  excerpt: 'Descubra como a inteligência artificial pode ser uma aliada poderosa na criação de textos jurídicos mais eficazes e persuasivos.',
-  content: 'A integração entre IA e copywriting jurídico representa uma nova era na comunicação legal...',
-  author: 'Dra. Ruth Monielly',
-  date: '2024-01-15',
-  readTime: '8 min',
-  category: 'Tecnologia',
-  image: 'https://images.pexels.com/photos/8849295/pexels-photo-8849295.jpeg?auto=compress&cs=tinysrgb&w=800',
-  views: 1250,
-  comments: 23,
-  featured: true
-};
+const featuredPost = featured;
+const basePosts = allPosts.filter((p) => !p.featured);
 
-const blogPosts = [
-  {
-    id: 2,
-    title: '10 Técnicas de Copywriting para Advogados',
-    excerpt: 'Estratégias comprovadas para tornar sua comunicação jurídica mais persuasiva e eficaz.',
-    author: 'Dra. Ruth Monielly',
-    date: '2024-01-12',
-    readTime: '6 min',
-    category: 'Copywriting',
-    image: 'https://images.pexels.com/photos/5668473/pexels-photo-5668473.jpeg?auto=compress&cs=tinysrgb&w=600',
-    views: 890,
-    comments: 15
-  },
-  {
-    id: 3,
-    title: 'Contratos Digitais: O Futuro dos Negócios',
-    excerpt: 'Como adaptar contratos tradicionais para o ambiente digital mantendo segurança jurídica.',
-    author: 'Dra. Ruth Monielly',
-    date: '2024-01-10',
-    readTime: '5 min',
-    category: 'Direito Digital',
-    image: 'https://images.pexels.com/photos/5668858/pexels-photo-5668858.jpeg?auto=compress&cs=tinysrgb&w=600',
-    views: 654,
-    comments: 8
-  },
-  {
-    id: 4,
-    title: 'Sales Pages que Convertem: Guia Completo',
-    excerpt: 'Passo a passo para criar páginas de vendas que realmente geram resultados.',
-    author: 'Dra. Ruth Monielly',
-    date: '2024-01-08',
-    readTime: '10 min',
-    category: 'Marketing',
-    image: 'https://images.pexels.com/photos/265087/pexels-photo-265087.jpeg?auto=compress&cs=tinysrgb&w=600',
-    views: 1100,
-    comments: 31
-  },
-  {
-    id: 5,
-    title: 'Compliance para Startups: O que Você Precisa Saber',
-    excerpt: 'Guia essencial de compliance para empresas em crescimento evitarem problemas legais.',
-    author: 'Dra. Ruth Monielly',
-    date: '2024-01-05',
-    readTime: '7 min',
-    category: 'Compliance',
-    image: 'https://images.pexels.com/photos/3184465/pexels-photo-3184465.jpeg?auto=compress&cs=tinysrgb&w=600',
-    views: 723,
-    comments: 12
-  },
-  {
-    id: 6,
-    title: 'E-mail Marketing Jurídico: Estratégias Eficazes',
-    excerpt: 'Como usar e-mail marketing para fortalecer relacionamentos e gerar novos clientes.',
-    author: 'Dra. Ruth Monielly',
-    date: '2024-01-03',
-    readTime: '6 min',
-    category: 'Marketing',
-    image: 'https://images.pexels.com/photos/1591062/pexels-photo-1591062.jpeg?auto=compress&cs=tinysrgb&w=600',
-    views: 567,
-    comments: 9
-  },
-  {
-    id: 7,
-    title: 'Humanização de Textos: Por que é Importante?',
-    excerpt: 'Entenda a importância de humanizar textos gerados por IA para manter autenticidade.',
-    author: 'Dra. Ruth Monielly',
-    date: '2024-01-01',
-    readTime: '4 min',
-    category: 'Tecnologia',
-    image: 'https://images.pexels.com/photos/8849295/pexels-photo-8849295.jpeg?auto=compress&cs=tinysrgb&w=600',
-    views: 445,
-    comments: 6
-  }
-];
+const categories = (() => {
+  const map = new Map<string, number>();
+  allPosts.forEach((p) => map.set(p.category, (map.get(p.category) || 0) + 1));
+  const list = Array.from(map.entries()).map(([name, count]) => ({ name, count }));
+  return [
+    { name: 'Todos', count: allPosts.length, icon: BookOpen },
+    ...list.map((c) => ({ ...c, icon: c.name.includes('Direito') ? Scale : c.name.includes('Marketing') ? TrendingUp : c.name.includes('Compliance') ? Briefcase : c.name.includes('Tecnologia') ? Bot : PenTool })),
+  ];
+})();
 
-const categories = [
-  { name: 'Todos', count: 25, icon: BookOpen },
-  { name: 'Copywriting', count: 8, icon: PenTool },
-  { name: 'Direito Digital', count: 6, icon: Scale },
-  { name: 'Tecnologia', count: 5, icon: Bot },
-  { name: 'Marketing', count: 4, icon: TrendingUp },
-  { name: 'Compliance', count: 2, icon: Briefcase }
-];
+const popularPosts = [...allPosts]
+  .sort((a, b) => (b.views || 0) - (a.views || 0))
+  .slice(0, 4)
+  .map((p) => ({ title: p.title, views: p.views || 0, slug: p.slug }));
 
-const popularPosts = [
-  { title: 'Como a IA está Revolucionando o Copywriting', views: 1250 },
-  { title: 'Sales Pages que Convertem: Guia Completo', views: 1100 },
-  { title: '10 Técnicas de Copywriting para Advogados', views: 890 },
-  { title: 'Compliance para Startups: O que Você Precisa Saber', views: 723 }
-];
+export default function BlogPage({
+  searchParams,
+}: {
+  searchParams?: { category?: string };
+}) {
+  const activeCategory = (searchParams?.category || '').trim();
 
-export default function BlogPage() {
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('pt-BR', { 
@@ -135,6 +55,10 @@ export default function BlogPage() {
       day: 'numeric' 
     });
   };
+
+  const blogPosts = !activeCategory
+    ? basePosts
+    : basePosts.filter((p) => p.category === activeCategory);
 
   return (
     <div className="min-h-screen bg-white">
@@ -180,9 +104,11 @@ export default function BlogPage() {
                   className="w-full h-full object-cover"
                 />
                 <div className="absolute top-4 left-4">
-                  <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                    {featuredPost.category}
-                  </span>
+                  <Link href={featuredPost.category ? `/blog?category=${encodeURIComponent(featuredPost.category)}` : '/blog'}>
+                    <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium hover:opacity-90">
+                      {featuredPost.category}
+                    </span>
+                  </Link>
                 </div>
               </div>
               <div className="p-8 lg:p-12">
@@ -210,10 +136,12 @@ export default function BlogPage() {
                     </div>
                   </div>
                   <div className="flex items-center justify-between">
-                    <Button className="bg-blue-600 hover:bg-blue-700 text-white">
-                      Ler Artigo Completo
-                      <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
+                    <Link href={`/blog/${featuredPost.slug}`}>
+                      <Button className="bg-blue-600 hover:bg-blue-700 text-white">
+                        Ler Artigo Completo
+                        <ArrowRight className="ml-2 h-4 w-4" />
+                      </Button>
+                    </Link>
                     <div className="flex items-center space-x-4 text-sm text-gray-500">
                       <div className="flex items-center space-x-1">
                         <Eye className="h-4 w-4" />
@@ -254,9 +182,11 @@ export default function BlogPage() {
                         className="w-full h-48 object-cover rounded-t-lg"
                       />
                       <div className="absolute top-4 left-4">
-                        <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium">
-                          {post.category}
-                        </span>
+                        <Link href={post.category ? `/blog?category=${encodeURIComponent(post.category)}` : '/blog'}>
+                          <span className="bg-blue-600 text-white px-3 py-1 rounded-full text-sm font-medium hover:opacity-90">
+                            {post.category}
+                          </span>
+                        </Link>
                       </div>
                     </div>
                     <CardContent className="p-6">
@@ -277,9 +207,11 @@ export default function BlogPage() {
                         </div>
                       </div>
                       <div className="flex items-center justify-between">
-                        <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
-                          Ler Mais
-                        </Button>
+                        <Link href={`/blog/${post.slug}`}>
+                          <Button variant="outline" className="border-blue-600 text-blue-600 hover:bg-blue-50">
+                            Ler Mais
+                          </Button>
+                        </Link>
                         <div className="flex items-center space-x-3 text-sm text-gray-500">
                           <div className="flex items-center space-x-1">
                             <Eye className="h-4 w-4" />
@@ -318,16 +250,31 @@ export default function BlogPage() {
                   <div className="space-y-3">
                     {categories.map((category) => {
                       const IconComponent = category.icon;
+                      const isActive = (!activeCategory && category.name === 'Todos') || activeCategory === category.name;
+                      const href =
+                        category.name === 'Todos'
+                          ? '/blog'
+                          : `/blog?category=${encodeURIComponent(category.name)}`;
                       return (
-                        <div key={category.name} className="flex items-center justify-between p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors">
-                          <div className="flex items-center space-x-3">
-                            <IconComponent className="h-4 w-4 text-blue-600" />
-                            <span className="text-gray-700">{category.name}</span>
+                        <Link key={category.name} href={href} className="block">
+                          <div
+                            className={`flex items-center justify-between p-2 rounded-lg transition-colors ${
+                              isActive ? 'bg-blue-50 ring-1 ring-blue-200' : 'hover:bg-gray-50'
+                            }`}
+                          >
+                            <div className="flex items-center space-x-3">
+                              <IconComponent className={`h-4 w-4 ${isActive ? 'text-blue-700' : 'text-blue-600'}`} />
+                              <span className={`text-gray-700 ${isActive ? 'font-medium' : ''}`}>
+                                {category.name}
+                              </span>
+                            </div>
+                            <span className={`text-sm px-2 py-1 rounded-full ${
+                              isActive ? 'text-blue-700 bg-blue-100' : 'text-gray-500 bg-gray-100'
+                            }`}>
+                              {category.count}
+                            </span>
                           </div>
-                          <span className="text-sm text-gray-500 bg-gray-100 px-2 py-1 rounded-full">
-                            {category.count}
-                          </span>
-                        </div>
+                        </Link>
                       );
                     })}
                   </div>
@@ -345,7 +292,7 @@ export default function BlogPage() {
                 <CardContent>
                   <div className="space-y-4">
                     {popularPosts.map((post, index) => (
-                      <div key={index} className="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors">
+                      <Link key={index} href={`/blog/${post.slug}`} className="flex items-start space-x-3 p-2 hover:bg-gray-50 rounded-lg transition-colors">
                         <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
                           <span className="text-blue-600 font-bold text-sm">{index + 1}</span>
                         </div>
@@ -358,7 +305,7 @@ export default function BlogPage() {
                             <span>{post.views} visualizações</span>
                           </div>
                         </div>
-                      </div>
+                      </Link>
                     ))}
                   </div>
                 </CardContent>

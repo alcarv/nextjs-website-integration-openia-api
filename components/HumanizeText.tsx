@@ -198,9 +198,11 @@ export default function HumanizeText() {
       const data = await response.json();
       if (data.humanizedVersions && Array.isArray(data.humanizedVersions)) {
         setOutputVersions(data.humanizedVersions);
-        const combined = data.humanizedVersions
-          .map((v: string, i: number) => `Versão ${i + 1}:\n${v}`)
-          .join("\n\n");
+        const combined = data.humanizedVersions.length > 1
+          ? data.humanizedVersions
+              .map((v: string, i: number) => `Versão ${i + 1}:\n${v}`)
+              .join("\n\n")
+          : (data.humanizedVersions[0] || '');
         setOutputText(combined || '');
       } else {
         setOutputText(data.humanizedText || '');
