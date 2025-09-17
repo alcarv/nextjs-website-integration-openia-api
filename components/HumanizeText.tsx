@@ -268,6 +268,16 @@ export default function HumanizeText() {
     return 'Humanizador';
   })();
 
+  const pageSubtitle = (() => {
+    if (pathname?.includes('/parafraseador')) {
+      return 'Reescreva conteúdos em novas palavras e estruturas, adaptados ao estilo de cada curso, preservando o sentido original e ampliando a diversidade textual.';
+    }
+    if (pathname?.includes('/complementador')) {
+      return 'Enriqueça seus textos com coesão, criticidade e reflexão, elevando a clareza e a profundidade sem alterar o núcleo original da ideia.';
+    }
+    return 'Transforme textos mecânicos em produções com voz humana, estilo refinado e linguagem autêntica.';
+  })();
+
   const usagePercentage = (() => {
     if (!user || !currentPlan) return 0;
     if (user.plan === 'free' && currentPlan.humanizations_per_month !== null) {
@@ -307,10 +317,7 @@ export default function HumanizeText() {
           <h1 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">
             <span className="text-gradient">{pageTitle}</span> de Textos IA
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Transforme textos gerados por inteligência artificial em conteúdo natural, 
-            autêntico e indetectável por sistemas anti-IA.
-          </p>
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">{pageSubtitle}</p>
         </div>
 
         {/* Usage Stats for logged in users */}

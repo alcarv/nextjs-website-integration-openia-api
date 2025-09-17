@@ -3,18 +3,18 @@ import { PROMPT_IDS } from '@/lib/promptConfig';
 // Fallback style directives (used when no explicit prompt text override is provided)
 export function fallbackStyleBySelection(tipo: string, modelo: string): string {
   if (tipo === 'HUMANIZADORES') {
-    if (modelo === 'analitico_reflexivo') return 'Reescreva com tom analítico-reflexivo: argumentação equilibrada, insights e conexões entre ideias, linguagem clara e precisa, registro formal moderado.';
-    if (modelo === 'expositivo_descritivo') return 'Estilo expositivo-descritivo: explique de forma clara e neutra, descrevendo características e contextos com objetividade e encadeamento lógico.';
+    if (modelo === 'analitico_reflexivo') return 'Estilo Analítico-Reflexivo: articula argumentos de forma crítica e equilibrada, estabelecendo relações entre ideias com clareza e formalidade adequada.';
+    if (modelo === 'expositivo_descritivo') return 'Estilo expositivo-descritivo: produz textos objetivos, descrevendo informações de forma simples e organizada.';
     if (modelo === 'tecnico_expositivo') return 'Estilo técnico-expositivo: precisão terminológica, frases objetivas, coesão por conectores técnicos, elimine ambiguidade e coloquialismos.';
-    if (modelo === 'narrativo_interpretativo') return 'Estilo narrativo-interpretativo: fluxo narrativo com interpretações e leituras do fenômeno, mantendo coesão, sem perder rigor e sem criar fatos.';
+    if (modelo === 'narrativo_interpretativo') return 'Estilo narrativo-interpretativo: constrói narrativas com interpretações críticas, mantendo coesão e fidelidade aos dados.';
     if (modelo === 'multiversoes') return 'Produza variações naturais do mesmo conteúdo, mudando vocabulário e estruturas, preservando integralmente o sentido.';
     if (modelo === 'dissertativo_expositivo') return 'Estilo dissertativo-expositivo: apresente ideias de forma clara e lógica, com introdução, desenvolvimento e conclusão, mantendo objetividade e coesão.';
-    if (modelo === 'explicativa_informativa') return 'Estilo explicativo-informativo: forneça informações claras e detalhadas, explicando conceitos e processos de forma acessível, com coesão e precisão.';
+    if (modelo === 'explicativa_informativa') return 'Estilo explicativo-informativo: transmite conteúdos de modo objetivo e coeso, com clareza e detalhamento.';
     if (modelo === 'dissertativa_reflexiva') return 'Estilo dissertativo-reflexivo: apresente argumentos com profundidade, incluindo reflexões pessoais fundamentadas, mantendo rigor acadêmico e coesão textual.';
   }
   if (tipo === 'PARAFRASEADORES') {
-    if (modelo === 'autoral_ruth') return 'Parafraseie em estilo autoral (Dra. Ruth Monielly): voz confiante, clareza, densidade conceitual e coesão; não invente dados.';
-    if (modelo === 'juridicas_politicas') return 'Parafraseie com registro jurídico-político: precisão normativa, fundamentação, conectores típicos (nesse sentido, ademais, por conseguinte), sem opinião gratuita.';
+    if (modelo === 'autoral_ruth') return 'Parafraseie em estilo autoral (Dra. Ruth Monielly): voz confiante, linguagem clara e coesa, com densidade conceitual, fiel às informações originais.';
+    if (modelo === 'juridicas_politicas') return 'Parafraseie com registro jurídico-político: elaboração textual pautada em rigor normativo, articulação lógica e conectores formais, evitando apreciações subjetivas.';
     if (modelo === 'saude') return 'Parafraseie com registro da área da saúde: vocabulário técnico adequado, objetividade, cuidado com causalidade e evidências.';
     if (modelo === 'educacao') return 'Parafraseie para a área da educação: clareza didática, exemplos pontuais, coesão temática, terminologia pedagógica adequada.';
     if (modelo === 'psicologia_psicanalise') return 'Parafraseie com registro de psicologia/psicanálise: rigor conceitual, definições precisas, cuidado com inferências e nuances teóricas.';
@@ -26,7 +26,7 @@ export function fallbackStyleBySelection(tipo: string, modelo: string): string {
   if (tipo === 'COMPLEMENTADOR') {
     if (modelo === 'argumentativo_reflexivo_critico_autoral') return 'Complemente com estilo argumentativo/reflexivo/crítico (autoral): fortaleça a tese, adicione justificativas e contra-argumentos, mantenha rigor e coesão.';
     if (modelo === 'analitico_critico') return 'Aprimore com tom analítico-crítico: refine conceitos, evidencie relações lógicas, melhore transições e elimine redundâncias.';
-    if (modelo === 'academico_critico') return 'Aprimore com tom acadêmico-crítico: use linguagem formal, melhore a estrutura argumentativa, adicione referências teóricas e mantenha coesão textual.';
+    if (modelo === 'academico_critico') return 'Aprimore com tom acadêmico-crítico: refina a linguagem formal, fortalece a argumentação e assegura coesão.';
   }
   return '';
 }

@@ -139,11 +139,10 @@ export default function ContatoPage() {
                   >
                     <option value="">Selecione um serviço</option>
                     <option value="consultoria">Consultoria Jurídica</option>
-                    <option value="copywriting">Copywriting</option>
                     <option value="redacao">Redação Jurídica</option>
                     <option value="humanizacao">Humanização de Textos IA</option>
-                    <option value="treinamento">Treinamentos</option>
-                    <option value="assessoria">Assessoria Empresarial</option>
+                    <option value="assessoria">Assessoria de Estudos</option>
+                    <option value="trabalhos-acad">Trabalhos Acadêmicos</option>
                     <option value="outro">Outro</option>
                   </select>
                 </div>
@@ -276,7 +275,7 @@ export default function ContatoPage() {
             {[
               {
                 question: 'Qual o prazo para entrega dos projetos?',
-                answer: 'Os prazos variam conforme o tipo de projeto. Consultoria jurídica: 3-5 dias úteis. Copywriting: 5-7 dias úteis. Projetos maiores são acordados individualmente.'
+                answer: 'Os prazos variam conforme o tipo de projeto. Consultoria jurídica: 3-5 dias úteis. Projetos maiores são acordados individualmente.'
               },
               {
                 question: 'Vocês atendem empresas de todo o Brasil?',
@@ -285,10 +284,6 @@ export default function ContatoPage() {
               {
                 question: 'Como funciona a consultoria jurídica?',
                 answer: 'Oferecemos consultoria preventiva e soluções para questões empresariais, trabalhistas e civis. O atendimento pode ser pontual ou através de assessoria mensal.'
-              },
-              {
-                question: 'O que está incluído no serviço de copywriting?',
-                answer: 'Inclui pesquisa de mercado, criação do copy, revisões ilimitadas e orientações para implementação. Testes A/B podem ser inclusos conforme o projeto.'
               },
               {
                 question: 'Como funciona o humanizador de textos IA?',

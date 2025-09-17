@@ -183,19 +183,19 @@ export default function SobrePage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex items-center space-x-3">
                   <CheckCircle className="h-5 w-5 text-green-500" />
-                  <span className="text-gray-700">OAB/SP Ativa</span>
+                  <span className="text-gray-700">Advogada</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <CheckCircle className="h-5 w-5 text-green-500" />
-                  <span className="text-gray-700">Copywriter Certificada</span>
+                  <span className="text-gray-700">Assessora Acadêmica</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <CheckCircle className="h-5 w-5 text-green-500" />
-                  <span className="text-gray-700">Especialista em IA</span>
+                  <span className="text-gray-700">Especialista em Trabalhos Acadêmicos</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <CheckCircle className="h-5 w-5 text-green-500" />
-                  <span className="text-gray-700">Consultora Empresarial</span>
+                  <span className="text-gray-700">Atuação Consolidada em Escrita de Excelência</span>
                 </div>
               </div>
             </div>
@@ -339,12 +339,15 @@ export default function SobrePage() {
               </Link>
             </Button>
             <Button
+              asChild
               size="lg"
               variant="outline"
               className="border-white text-white hover:bg-white hover:text-blue-600"
             >
-              Ver Serviços
-              <ArrowRight className="ml-2 h-5 w-5" />
+              <Link href="/servicos" className="flex items-center">
+                Ver Serviços
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
             </Button>
           </div>
         </div>

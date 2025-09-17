@@ -68,11 +68,10 @@ export default function BlogPage({
       <section className="gradient-bg py-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-6">
-            <span className="text-gradient">Blog</span> Jurídico & Copywriting
+            <span className="text-gradient">Produções</span> Autorais
           </h1>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
-            Insights, estratégias e tendências sobre direito, copywriting e tecnologia 
-            para impulsionar seu negócio e carreira.
+            Artigos, textos, reflexões e conteúdos acadêmicos reunidos em um só espaço.
           </p>
           <div className="max-w-md mx-auto">
             <div className="relative">
@@ -349,9 +348,11 @@ export default function BlogPage({
             <Button size="lg" className="bg-white text-blue-600 hover:bg-gray-100">
               Solicitar Consultoria
             </Button>
-            <Button size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
-              Ver Serviços
-              <ArrowRight className="ml-2 h-5 w-5" />
+            <Button asChild size="lg" variant="outline" className="border-white text-white hover:bg-white hover:text-blue-600">
+              <Link href="/servicos" className="flex items-center">
+                Ver Serviços
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
             </Button>
           </div>
         </div>
