@@ -249,6 +249,29 @@ export default function SobrePage() {
         </div>
       </section>
 
+      {/* Video Section */}
+      <section className="py-20 bg-gray-50">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-6">
+            Conheça nossa ferramenta exclusiva
+          </h2>
+          <p className="text-lg text-gray-600 mb-10">
+            Assista ao vídeo gravado e descubra mais sobre nossa ferramenta, desenvolvida para transformar sua experiência acadêmica.
+          </p>
+          <div className="mx-auto w-full max-w-sm sm:max-w-md">
+            <div className="overflow-hidden rounded-2xl shadow-2xl bg-black">
+              <video
+                src="/video-1-sobre.mp4"
+                controls
+                preload="metadata"
+                playsInline
+                className="w-full h-auto"
+              />
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Values Section */}
       <section className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
