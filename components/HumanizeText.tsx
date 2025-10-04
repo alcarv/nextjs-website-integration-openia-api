@@ -104,7 +104,7 @@ export default function HumanizeText() {
   const exceedsLimits = () => {
     if (!user || !currentPlan) return false;
     if (user.plan === 'free') {
-      const wl = currentPlan.word_limit ?? 200;
+      const wl = currentPlan.word_limit ?? 350;
       return getWordCount(inputText) > wl;
     }
     if (currentPlan.character_quota === null) return false;
@@ -158,7 +158,7 @@ export default function HumanizeText() {
       toast({
         title: user?.plan === 'free' ? 'Limite de palavras' : 'Limite de caracteres',
         description: user?.plan === 'free'
-          ? `Seu plano gratuito permite até ${currentPlan?.word_limit ?? 200} palavras por texto.`
+          ? `Seu plano gratuito permite até ${currentPlan?.word_limit ?? 350} palavras por texto.`
           : 'Seu plano não possui saldo suficiente de caracteres para este texto. Faça upgrade para continuar.',
         variant: "destructive",
       });

@@ -109,26 +109,7 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // Enforce free plan limits (requests + words per text)
-    if (user.plan === 'free') {
-      // hard cap: 3 uses and 200 words per text
-      if ((user.usage_count ?? 0) >= 3) {
-        return NextResponse.json(
-          { error: 'Limite de uso atingido no plano gratuito. Faça upgrade para continuar.' },
-          { status: 403 }
-        );
-      }
-
-      const words = text.trim().split(/\s+/).filter((w: string) => w.length > 0).length;
-      if (words > 200) {
-        return NextResponse.json(
-          { error: 'Limite de palavras excedido para o plano gratuito (máx. 200 por texto).' },
-          { status: 403 }
-        );
-      }
-    }
-
-    // Enforce character quota by plan for paid tiers
+    // Load current plan to enforce quotas and limits
     const { data: plan, error: planError } = await supabase
       .from('plans')
       .select('*')
@@ -142,6 +123,31 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Enforce free plan limits based on plan table (requests + words per text)
+    if (user.plan === 'free') {
+      const freeMonthly = plan.humanizations_per_month;
+      if (freeMonthly !== null && freeMonthly !== undefined) {
+        if ((user.usage_count ?? 0) >= freeMonthly) {
+          return NextResponse.json(
+            { error: 'Limite de uso atingido no plano gratuito. Faça upgrade para continuar.' },
+            { status: 403 }
+          );
+        }
+      }
+
+      const words = text.trim().split(/\s+/).filter((w: string) => w.length > 0).length;
+      const freeWordLimit = plan.word_limit;
+      if (freeWordLimit !== null && freeWordLimit !== undefined) {
+        if (words > freeWordLimit) {
+          return NextResponse.json(
+            { error: `Limite de palavras excedido para o plano gratuito (máx. ${freeWordLimit} por texto).` },
+            { status: 403 }
+          );
+        }
+      }
+    }
+
+    // Enforce character quota by plan for paid tiers
     const charCount = text.length;
     if (user.plan !== 'free' && plan.character_quota !== null && plan.character_quota !== undefined) {
       const used = user.characters_used ?? 0;
